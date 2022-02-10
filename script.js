@@ -50,8 +50,6 @@ function handleMouseClick(e) {
     }
   }
 
-  console.log(e.target);
-
   if (e.target.matches("[data-help]")) {
     openModal("help");
   }
