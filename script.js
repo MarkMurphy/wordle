@@ -90,7 +90,7 @@ function submit() {
     return word + tile.dataset.letter;
   }, "");
 
-  if (!words.includes(guess) && !dictionary.includes(guess)) {
+  if (!(words.includes(guess) || dictionary.includes(guess))) {
     showAlert("Not in word list");
     shakeTiles(activeTiles);
     return;
