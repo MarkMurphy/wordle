@@ -12,6 +12,7 @@ const STATE_ABSENT = "absent";
 const STATE_PRESENT = "present";
 const STATE_CORRECT = "correct";
 
+const help = document.querySelector('[data-modal="help"]');
 const keyboard = document.querySelector("[data-keyboard]");
 const grid = document.querySelector("[data-letter-grid]");
 const alerts = document.querySelector("[data-alert-container]");
@@ -48,6 +49,43 @@ function handleMouseClick(e) {
         break;
     }
   }
+
+  console.log(e.target);
+
+  if (e.target.matches("[data-help]")) {
+    openModal("help");
+  }
+}
+
+function openModal(name) {
+  const modal = document.querySelector(`[data-modal="${name}"]`);
+  if (modal == null) {
+    return;
+  }
+  modal.classList.add("open");
+  modal.querySelector("[data-close]").addEventListener(
+    "click",
+    () => {
+      closeModal(name);
+    },
+    { once: true }
+  );
+}
+
+function closeModal(name) {
+  const modal = document.querySelector(`[data-modal="${name}"]`);
+  if (modal == null) {
+    return;
+  }
+  modal.classList.remove("open");
+  modal.classList.add("close");
+  modal.addEventListener(
+    "transitionend",
+    () => {
+      modal.classList.remove("close");
+    },
+    { once: true }
+  );
 }
 
 function handleKeyDown(e) {
@@ -58,6 +96,14 @@ function handleKeyDown(e) {
 
   if (e.key == "Backspace" || e.key === "Delete") {
     deleteKey();
+    return;
+  }
+
+  if (e.key == "Escape") {
+    const modal = document.querySelector("[data-modal].open");
+    if (modal) {
+      closeModal(modal.dataset.modal);
+    }
     return;
   }
 

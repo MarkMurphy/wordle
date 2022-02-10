@@ -48,7 +48,99 @@
     <link rel="stylesheet" href="./style.css" />
     <script type="module" src="./script.js" defer></script>
   </head>
-  <body>
+  <body class="game">
+    <header class="game-header">
+      <div class="menu">
+        <button class="help icon" data-help>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+          >
+            <path
+              d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"
+            ></path>
+          </svg>
+        </button>
+      </div>
+      <h1 class="title">Wordle</h1>
+      <div class="menu">
+        <!-- todo -->
+      </div>
+    </header>
+    <div class="instructions modal" data-modal="help">
+      <div class="model-content">
+        <header class="modal-header">
+          <h2 class="title">How to play</h2>
+          <button class="close icon" data-close>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+            >
+              <path
+                fill="currentColor"
+                d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+              ></path>
+            </svg>
+          </button>
+        </header>
+        <p>Guess the <strong>WORDLE</strong> in 6 tries.</p>
+        <p>
+          Each guess must be a valid 5 letter word. Hit the enter button to
+          submit.
+        </p>
+        <p>
+          Ater each guess, the color of the tiles will change to show how close
+          your guess was to the word.
+        </p>
+        <div class="examples">
+          <p><strong>Examples</strong></p>
+          <figure>
+            <blockquote>
+              <kbd class="tile" data-state="correct">W</kbd>
+              <kbd class="tile">E</kbd>
+              <kbd class="tile">A</kbd>
+              <kbd class="tile">R</kbd>
+              <kbd class="tile">Y</kbd>
+            </blockquote>
+            <figcaption>
+              The letter <strong><kbd>W</kbd></strong> is in the word and in the
+              correct spot.
+            </figcaption>
+          </figure>
+          <figure>
+            <blockquote>
+              <kbd class="tile">P</kbd>
+              <kbd class="tile" data-state="present">I</kbd>
+              <kbd class="tile">L</kbd>
+              <kbd class="tile">L</kbd>
+              <kbd class="tile">S</kbd>
+            </blockquote>
+            <figcaption>
+              The letter <strong><kbd>I</kbd></strong> is in the word but in the
+              wrong spot.
+            </figcaption>
+          </figure>
+          <figure>
+            <blockquote>
+              <kbd class="tile">V</kbd>
+              <kbd class="tile">A</kbd>
+              <kbd class="tile">G</kbd>
+              <kbd class="tile" data-state="absent">U</kbd>
+              <kbd class="tile">E</kbd>
+            </blockquote>
+            <figcaption>
+              The letter <strong><kbd>U</kbd></strong> is not in the word in any
+              spot.
+            </figcaption>
+          </figure>
+        </div>
+        <p><strong>A new WORDLE will be available each day!</strong></p>
+      </div>
+    </div>
     <div class="alert-container" data-alert-container></div>
     <div class="grid" data-letter-grid>
       <div class="tile"></div>

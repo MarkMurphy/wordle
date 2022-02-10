@@ -6,17 +6,64 @@ html, body {
   min-height: 100%;
 }
 
-body {
-  height: 100%;
+.game {
   display: flex;
   flex-direction: column;
+  width: max-content;
+  height: 100%;
+  margin: 0 auto;
+  padding: 1em;
+  color: white;
   background-color: hsl(240, 3%, 7%);
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   font-size: clamp(0.8rem, 2.5vmin, 1.5rem);
-  margin: 0;
-  padding: 1em;
   overflow: hidden;
+}
+
+/**
+ * Header
+ */
+.game-header {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  position: relative;
+  margin-top: -1em;
+  height: 3em;
+}
+
+.game-header .menu:first-child {
+  justify-self: start;
+}
+
+.game-header .menu:last-child {
+  justify-self: end;
+}
+
+.game-header .title {
+  margin: 0;
+  font-weight: 900;
+  letter-spacing: .2em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.icon {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: hsl(200, 1%, 35%);
+  fill: currentColor;
+  margin: 0;
+  padding: 0;
+}
+
+.icon > svg {
+  user-select: none;
+  pointer-events: none;
 }
 
 /**
@@ -92,6 +139,7 @@ body {
 }
 
 
+
 /**
  * Grid
  */
@@ -101,7 +149,7 @@ body {
   align-content: center;
   flex-grow: 1;
   grid-template-columns: repeat(5, 4em);
-  grid-template-rows: repeat(6, 4em);
+  grid-auto-rows: 4em;
   gap: .25em;
   margin-bottom: 1em;
 }
@@ -220,14 +268,100 @@ body {
 }
 
 .alert {
-  pointer-events: none;
+  color: black;
   background-color: hsl(204, 7%, 85%);
   padding: .75em;
   border-radius: .25em;
+  pointer-events: none;
   opacity: 1;
   transition: opacity 500ms ease-in-out;
 }
 
 .alert.hide {
   opacity: 0;
+}
+
+
+
+/**
+ * Modals
+ */
+.modal {
+  position: fixed;
+  inset: 0;
+  opacity: 0;
+  transition: visibility 0s, opacity 250ms ease-in-out;
+  background-color: inherit;
+  visibility: hidden;
+}
+
+.modal.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal.close {
+  opacity: 0;
+  visibility: visible;
+}
+
+.model-content {
+  display: flex;
+  flex-direction: column;
+  max-width: max-content;
+  padding: 1em;
+  margin: 0 auto;
+  transform: translateY(5vh);
+  transition: transform 250ms ease-in-out;
+}
+
+.modal.open .model-content {
+  transform: translateY(0);
+}
+
+
+
+/**
+ * Instructions
+ */
+.instructions {
+  font-size: .875em;
+}
+
+.instructions header {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  justify-content: center;
+}
+
+.instructions .title {
+  text-align: center;
+  text-transform: uppercase;
+  grid-column: 2;
+}
+
+.instructions .close {
+  justify-self: end;
+}
+
+.instructions .examples {
+  border-top: 1px solid hsl(240, 2%, 23%);
+  border-bottom: 1px solid hsl(240, 2%, 23%);
+}
+
+.instructions figure {
+  margin: 0 0 2em;
+}
+
+.instructions blockquote {
+  display: grid;
+  grid-template-columns: repeat(5, 2em);
+  grid-auto-rows: 2em;
+  gap: .25em;
+  margin: 0 0 1em;
+}
+
+.instructions .tile {
+  font-size: 1.25em;
 }
