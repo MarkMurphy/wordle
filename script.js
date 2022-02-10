@@ -1,6 +1,9 @@
 import dictionary from "./dictionary.js";
 import words from "./words.js";
 
+window.words = words;
+window.dictionary = dictionary;
+
 startInteraction();
 
 const WORD_LENGTH = 5;
@@ -12,7 +15,6 @@ const STATE_ABSENT = "absent";
 const STATE_PRESENT = "present";
 const STATE_CORRECT = "correct";
 
-const help = document.querySelector('[data-modal="help"]');
 const keyboard = document.querySelector("[data-keyboard]");
 const grid = document.querySelector("[data-letter-grid]");
 const alerts = document.querySelector("[data-alert-container]");
@@ -117,7 +119,7 @@ function pressKey(key) {
   }
 
   const nextTile = grid.querySelector(":not([data-letter])");
-  nextTile.dataset.letter = key;
+  nextTile.dataset.letter = key.toLowerCase();
   nextTile.dataset.state = STATE_ACTIVE;
   nextTile.textContent = key;
 }
