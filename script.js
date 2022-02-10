@@ -1,8 +1,6 @@
 import dictionary from "./dictionary.js";
 import words from "./words.js";
 
-dictionary.push(...words);
-
 startInteraction();
 
 const WORD_LENGTH = 5;
@@ -92,7 +90,7 @@ function submit() {
     return word + tile.dataset.letter;
   }, "");
 
-  if (!dictionary.includes(guess)) {
+  if (!words.includes(guess) && !dictionary.includes(guess)) {
     showAlert("Not in word list");
     shakeTiles(activeTiles);
     return;
