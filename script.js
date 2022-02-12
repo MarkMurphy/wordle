@@ -329,25 +329,34 @@ function shakeTiles(tiles) {
 }
 
 function danceTiles(tiles) {
-  tiles.forEach((tile, index) => {
-    setTimeout(() => {
-      tile.classList.add("dance");
-      tile.addEventListener(
-        "animationend",
-        () => {
-          tile.classList.remove("dance");
-        },
-        { once: true }
-      );
-    }, (index * DANCE_ANIMATION_DURATION) / 5);
+  return new Promise((resolve) => {
+    tiles.forEach((tile, index) => {
+      setTimeout(() => {
+        tile.classList.add("dance");
+        tile.addEventListener(
+          "animationend",
+          () => {
+            tile.classList.remove("dance");
+            resolve();
+          },
+          { once: true }
+        );
+      }, (index * DANCE_ANIMATION_DURATION) / 5);
+    });
   });
+}
+
+function showStats() {
+  openModal("statistics");
 }
 
 function checkWinLose(guess, tiles) {
   if (guess === word) {
     stopInteraction();
     showAlert("You Win!", 5000);
-    danceTiles(tiles);
+    danceTiles(tiles).then(() => {
+      showStats();
+    });
     return;
   }
 
@@ -356,5 +365,6 @@ function checkWinLose(guess, tiles) {
     stopInteraction();
     showAlert("Can’t all be winners…Alyssa", null);
     showAlert(word.toUpperCase(), null);
+    showStats();
   }
 }
