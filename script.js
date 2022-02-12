@@ -52,27 +52,34 @@ document.addEventListener("change", (e) => {
   }
 });
 
-helpButton.addEventListener("click", () => {
-  openModal("help");
-});
+helpButton.addEventListener("click", openHelp);
+statisticsButton.addEventListener("click", openStatistics);
+settingsButton.addEventListener("click", openSettings);
 
-statisticsButton.addEventListener("click", () => {
-  openModal("statistics");
-});
+shareButton.addEventListener("click", share);
 
-settingsButton.addEventListener("click", () => {
-  openModal("settings");
-});
+async function share() {
+  const text = getSharableText();
 
-shareButton.addEventListener("click", async () => {
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: document.title,
+        text,
+      });
+      return;
+    } catch (error) {
+      console.error("Error sharing:", error);
+    }
+  }
+
   try {
-    const text = getSharableText();
     await navigator.clipboard.writeText(text);
     showAlert("Copied results to clipboard", 2000);
   } catch (error) {
-    console.error("Could not copy results: ", error);
+    console.error("Could not copy results to clipboard: ", error);
   }
-});
+}
 
 function getSharableText() {
   const letters = [...grid.querySelectorAll("[data-letter]")];
@@ -140,6 +147,10 @@ function openModal(name) {
   if (modal == null) {
     return;
   }
+
+  // close any currently open modals
+  document.querySelectorAll(`[data-modal].open`).forEach(closeModal);
+
   const close = modal.querySelector("[data-close]");
   const overlay = modal.querySelector("[data-overlay]");
   const handleModalClose = (e) => {
@@ -162,11 +173,15 @@ function openModal(name) {
   modal.classList.add("open");
 }
 
-function closeModal(name) {
-  const modal = document.querySelector(`[data-modal="${name}"]`);
+function closeModal(modal) {
+  if (typeof modal === "string") {
+    modal = document.querySelector(`[data-modal="${modal}"]`);
+  }
+
   if (modal == null) {
     return;
   }
+
   modal.classList.remove("open");
   modal.classList.add("closing");
   modal.addEventListener(
@@ -176,6 +191,22 @@ function closeModal(name) {
     },
     { once: true }
   );
+}
+
+function openSettings() {
+  openModal("settings");
+}
+
+function openStatistics() {
+  openModal("statistics");
+}
+
+function openHelp() {
+  openModal("help");
+}
+
+function openStatistics() {
+  openModal("statistics");
 }
 
 function handleKeyDown(e) {
@@ -346,24 +377,17 @@ function danceTiles(tiles) {
   });
 }
 
-function showStats() {
-  openModal("statistics");
-}
-
 function checkWinLose(guess, tiles) {
   if (guess === word) {
     stopInteraction();
     showAlert("You Win!", 5000);
-    danceTiles(tiles).then(() => {
-      showStats();
-    });
+    danceTiles(tiles).then(() => setTimeout(openStatistics, 1000));
     return;
   }
 
   const remainingTiles = grid.querySelectorAll(":not([data-letter])");
   if (remainingTiles.length === 0) {
     stopInteraction();
-    showAlert("Can’t all be winners…Alyssa", null);
     showAlert(word.toUpperCase(), null);
     showStats();
   }
