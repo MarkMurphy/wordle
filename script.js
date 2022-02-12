@@ -293,7 +293,6 @@ function showAlert(message, duration = 1000) {
 }
 
 function openModal(selector) {
-  const selector = e.target.dataset.target;
   const modal = document.querySelector(selector);
   const backdrop = modal.querySelector("[data-modal-backdrop]");
   const body = modal.querySelector("[data-modal-body]");
