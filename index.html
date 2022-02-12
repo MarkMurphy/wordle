@@ -49,9 +49,9 @@
     <script type="module" src="./script.js" defer></script>
   </head>
   <body class="game">
-    <header class="game-header">
+    <header>
       <div class="menu">
-        <button class="help icon" data-help>
+        <button class="icon" data-help-button>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             height="24"
@@ -66,12 +66,36 @@
       </div>
       <h1 class="title">Wordle</h1>
       <div class="menu">
-        <!-- todo -->
+        <button class="icon" data-statistics-button>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+          >
+            <path
+              d="M16,11V3H8v6H2v12h20V11H16z M10,5h4v14h-4V5z M4,11h4v8H4V11z M20,19h-4v-6h4V19z"
+            ></path>
+          </svg>
+        </button>
+        <button class="icon" data-settings-button>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+          >
+            <path
+              d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"
+            ></path>
+          </svg>
+        </button>
       </div>
     </header>
-    <div class="instructions modal" data-modal="help">
-      <div class="model-content">
-        <header class="modal-header">
+    <div class="modal instructions opaque" data-modal="help">
+      <div class="modal-overlay" data-overlay></div>
+      <div class="modal-content">
+        <div class="header">
           <h2 class="title">How to play</h2>
           <button class="close icon" data-close>
             <svg
@@ -86,7 +110,7 @@
               ></path>
             </svg>
           </button>
-        </header>
+        </div>
         <p>Guess the <strong>WORDLE</strong> in 6 tries.</p>
         <p>
           Each guess must be a valid 5 letter word. Hit the enter button to
@@ -101,10 +125,10 @@
           <figure>
             <blockquote>
               <kbd class="tile" data-state="correct">W</kbd>
-              <kbd class="tile">E</kbd>
-              <kbd class="tile">A</kbd>
-              <kbd class="tile">R</kbd>
-              <kbd class="tile">Y</kbd>
+              <kbd class="tile" data-state="active">E</kbd>
+              <kbd class="tile" data-state="active">A</kbd>
+              <kbd class="tile" data-state="active">R</kbd>
+              <kbd class="tile" data-state="active">Y</kbd>
             </blockquote>
             <figcaption>
               The letter <strong><kbd>W</kbd></strong> is in the word and in the
@@ -113,11 +137,11 @@
           </figure>
           <figure>
             <blockquote>
-              <kbd class="tile">P</kbd>
+              <kbd class="tile" data-state="active">P</kbd>
               <kbd class="tile" data-state="present">I</kbd>
-              <kbd class="tile">L</kbd>
-              <kbd class="tile">L</kbd>
-              <kbd class="tile">S</kbd>
+              <kbd class="tile" data-state="active">L</kbd>
+              <kbd class="tile" data-state="active">L</kbd>
+              <kbd class="tile" data-state="active">S</kbd>
             </blockquote>
             <figcaption>
               The letter <strong><kbd>I</kbd></strong> is in the word but in the
@@ -126,11 +150,11 @@
           </figure>
           <figure>
             <blockquote>
-              <kbd class="tile">V</kbd>
-              <kbd class="tile">A</kbd>
-              <kbd class="tile">G</kbd>
+              <kbd class="tile" data-state="active">V</kbd>
+              <kbd class="tile" data-state="active">A</kbd>
+              <kbd class="tile" data-state="active">G</kbd>
               <kbd class="tile" data-state="absent">U</kbd>
-              <kbd class="tile">E</kbd>
+              <kbd class="tile" data-state="active">E</kbd>
             </blockquote>
             <figcaption>
               The letter <strong><kbd>U</kbd></strong> is not in the word in any
@@ -139,6 +163,173 @@
           </figure>
         </div>
         <p><strong>A new WORDLE will be available each day!</strong></p>
+      </div>
+    </div>
+    <div class="modal statistics" data-modal="statistics">
+      <div class="modal-overlay" data-overlay></div>
+      <div class="modal-content">
+        <div class="header">
+          <h2 class="title">Statistics</h2>
+          <button class="close icon" data-close>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+            >
+              <path
+                d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+              ></path>
+            </svg>
+          </button>
+        </div>
+        <div class="container">
+          <div class="statistics" data-statistics>
+            <div class="statistic-container">
+              <div class="statistic" data-statistic-games-played>0</div>
+              <div class="label">Played</div>
+            </div>
+
+            <div class="statistic-container">
+              <div class="statistic" data-statistic-win-percentage>0</div>
+              <div class="label">Win %</div>
+            </div>
+
+            <div class="statistic-container">
+              <div class="statistic" data-statistic-current-streak>0</div>
+              <div class="label">Current Streak</div>
+            </div>
+
+            <div class="statistic-container">
+              <div class="statistic" data-statistic-best-streak>0</div>
+              <div class="label">Best Streak</div>
+            </div>
+          </div>
+          <div class="guess-distribution">
+            <h2 class="title">Guess Distribution</h2>
+            <div class="no-data">No Data</div>
+
+            <div style="display: none">
+              <div class="graph-container">
+                <div class="guess">1</div>
+                <div class="graph">
+                  <div class="graph-bar" style="width: 7%">
+                    <div class="num-guesses">0</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="graph-container">
+                <div class="guess">2</div>
+                <div class="graph">
+                  <div class="graph-bar" style="width: 7%">
+                    <div class="num-guesses">0</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="graph-container">
+                <div class="guess">3</div>
+                <div class="graph">
+                  <div class="graph-bar" style="width: 7%">
+                    <div class="num-guesses">0</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="graph-container">
+                <div class="guess">4</div>
+                <div class="graph">
+                  <div
+                    class="graph-bar align-right highlight"
+                    style="width: 100%"
+                  >
+                    <div class="num-guesses">1</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="graph-container">
+                <div class="guess">5</div>
+                <div class="graph">
+                  <div class="graph-bar" style="width: 7%">
+                    <div class="num-guesses">0</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="graph-container">
+                <div class="guess">6</div>
+                <div class="graph">
+                  <div class="graph-bar" style="width: 7%">
+                    <div class="num-guesses">0</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="footer">
+            <div class="countdown">
+              <h2 class="title">Next WORDLE</h2>
+              <div class="timer" data-countdown-timer>
+                <div class="statistic-container">
+                  <div class="statistic timer">00:00:00</div>
+                </div>
+              </div>
+            </div>
+            <div class="share">
+              <button class="icon" data-share-button>
+                Share
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                >
+                  <path
+                    d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92zM18 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM6 13c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm12 7.02c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"
+                  ></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal settings opaque" data-modal="settings">
+      <div class="modal-overlay" data-overlay></div>
+      <div class="modal-content">
+        <div class="header">
+          <h2 class="title">Settings</h2>
+          <button class="close icon" data-close>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+            >
+              <path
+                d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+              ></path>
+            </svg>
+          </button>
+        </div>
+        <section>
+          <div class="setting">
+            <div class="text">
+              <div class="title">Disable Absent Letters</div>
+              <div class="description">
+                Prevents absent letters revealed from being be re-enterd.
+              </div>
+            </div>
+            <div class="control">
+              <label class="switch">
+                <input type="checkbox" data-setting="disableAbsentLetters" />
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
     <div class="alert-container" data-alert-container></div>

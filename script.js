@@ -1,8 +1,16 @@
-import dictionary from "./dictionary.js";
-import words from "./words.js";
+import dictionary from "./scripts/dictionary.js";
+import words from "./scripts/words.js";
 
-window.words = words;
-window.dictionary = dictionary;
+const root = document.documentElement;
+const theme = window.matchMedia?.("(prefers-color-scheme: light)") || {};
+
+changeTheme(theme);
+
+function changeTheme({ matches }) {
+  root.dataset.theme = matches ? "light" : "dark";
+}
+
+theme.addEventListener("change", changeTheme);
 
 startInteraction();
 
@@ -15,15 +23,89 @@ const STATE_ABSENT = "absent";
 const STATE_PRESENT = "present";
 const STATE_CORRECT = "correct";
 
+const helpButton = document.querySelector("[data-help-button]");
+const statisticsButton = document.querySelector("[data-statistics-button]");
+const settingsButton = document.querySelector("[data-settings-button]");
+const shareButton = document.querySelector("[data-share-button]");
+
 const keyboard = document.querySelector("[data-keyboard]");
 const grid = document.querySelector("[data-letter-grid]");
 const alerts = document.querySelector("[data-alert-container]");
-const word = getWordOfTheDay();
 
-function getWordOfTheDay(offsetFromDate = new Date(2022, 0, 1)) {
-  const msOffset = Date.now() - offsetFromDate;
-  const dayOffset = Math.floor(msOffset / 1000 / 60 / 60 / 24);
-  return words[dayOffset % words.length];
+const START_DATE = new Date(2022, 0, 1);
+const wordle = Math.floor((Date.now() - START_DATE) / 1000 / 60 / 60 / 24);
+const word = words[wordle % words.length];
+
+const settings = {
+  disableAbsentLetters: false,
+};
+
+document.addEventListener("change", (e) => {
+  const setting = e.target.dataset.setting;
+
+  if (setting == null) {
+    return;
+  }
+
+  if (setting === "disableAbsentLetters") {
+    settings.disableAbsentLetters = Boolean(e.target.checked);
+  }
+});
+
+helpButton.addEventListener("click", () => {
+  openModal("help");
+});
+
+statisticsButton.addEventListener("click", () => {
+  openModal("statistics");
+});
+
+settingsButton.addEventListener("click", () => {
+  openModal("settings");
+});
+
+shareButton.addEventListener("click", async () => {
+  try {
+    const text = getSharableText();
+    await navigator.clipboard.writeText(text);
+    showAlert("Copied results to clipboard", 2000);
+  } catch (error) {
+    console.error("Could not copy results: ", error);
+  }
+});
+
+function getSharableText() {
+  const letters = [...grid.querySelectorAll("[data-letter]")];
+  const guesses = letters.reduce((guesses, letter, index) => {
+    const guess = Math.floor(index / WORD_LENGTH) % 6;
+
+    if (guesses[guess] == null) {
+      guesses[guess] = "";
+    }
+
+    guesses[guess] += getLetterStateEmoji(letter.dataset.state);
+
+    return guesses;
+  }, []);
+
+  const text = [`Wordle ${wordle} ${guesses.length}/6`, ``, ...guesses].join(
+    "\n"
+  );
+
+  return text;
+}
+
+function getLetterStateEmoji(state) {
+  switch (state) {
+    case STATE_ABSENT:
+      return "⬜";
+    case STATE_PRESENT:
+      return "🟨";
+    case STATE_CORRECT:
+      return "🟩";
+    default:
+      return " ";
+  }
 }
 
 function startInteraction() {
@@ -51,10 +133,6 @@ function handleMouseClick(e) {
         break;
     }
   }
-
-  if (e.target.matches("[data-help]")) {
-    openModal("help");
-  }
 }
 
 function openModal(name) {
@@ -62,14 +140,26 @@ function openModal(name) {
   if (modal == null) {
     return;
   }
-  modal.classList.add("open");
-  modal.querySelector("[data-close]").addEventListener(
-    "click",
-    () => {
+  const close = modal.querySelector("[data-close]");
+  const overlay = modal.querySelector("[data-overlay]");
+  const handleModalClose = (e) => {
+    if (e instanceof KeyboardEvent && e.key === "Escape") {
+      close.removeEventListener("clink", handleModalClose);
       closeModal(name);
-    },
-    { once: true }
-  );
+    }
+
+    if (e instanceof MouseEvent) {
+      overlay.removeEventListener("click", handleModalClose);
+      document.removeEventListener("keydown", handleModalClose);
+      closeModal(name);
+    }
+  };
+
+  close.addEventListener("click", handleModalClose, { once: true });
+  overlay.addEventListener("click", handleModalClose, { once: true });
+  document.addEventListener("keydown", handleModalClose, { once: true });
+
+  modal.classList.add("open");
 }
 
 function closeModal(name) {
@@ -78,11 +168,11 @@ function closeModal(name) {
     return;
   }
   modal.classList.remove("open");
-  modal.classList.add("close");
+  modal.classList.add("closing");
   modal.addEventListener(
-    "transitionend",
+    "animationend",
     () => {
-      modal.classList.remove("close");
+      modal.classList.remove("closing");
     },
     { once: true }
   );
@@ -99,20 +189,19 @@ function handleKeyDown(e) {
     return;
   }
 
-  if (e.key == "Escape") {
-    const modal = document.querySelector("[data-modal].open");
-    if (modal) {
-      closeModal(modal.dataset.modal);
-    }
-    return;
-  }
-
   if (e.key.match(/^[a-zA-Z]$/)) {
     pressKey(e.key);
   }
 }
 
 function pressKey(key) {
+  if (
+    settings.disableAbsentLetters &&
+    keyboard.querySelector(`[data-key="${key}"i][data-state="${STATE_ABSENT}"]`)
+  ) {
+    return;
+  }
+
   const activeTiles = getActiveTitles();
   if (activeTiles.length >= WORD_LENGTH) {
     return;
@@ -186,7 +275,9 @@ function flipTile(tile, index, array, guess) {
       } else {
         tile.dataset.state = STATE_ABSENT;
         key.dataset.state = STATE_ABSENT;
-        key.disabled = true;
+        if (settings.disableAbsentLetters) {
+          key.disabled = true;
+        }
       }
 
       if (index === array.length - 1) {
@@ -255,7 +346,7 @@ function danceTiles(tiles) {
 function checkWinLose(guess, tiles) {
   if (guess === word) {
     stopInteraction();
-    showAlert("You Win", 5000);
+    showAlert("You Win!", 5000);
     danceTiles(tiles);
     return;
   }
@@ -263,6 +354,7 @@ function checkWinLose(guess, tiles) {
   const remainingTiles = grid.querySelectorAll(":not([data-letter])");
   if (remainingTiles.length === 0) {
     stopInteraction();
+    showAlert("Can’t all be winners…look’n at you Alyssa.", null);
     showAlert(word.toUpperCase(), null);
   }
 }

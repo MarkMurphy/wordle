@@ -1,0 +1,77 @@
+
+/**
+ * Keyboard
+ */
+ .keyboard {
+  display: grid;
+  grid-template-columns: repeat(20, minmax(auto, 1.25em));
+  grid-auto-rows: 3em;
+  gap: 0.25em;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+.keyboard button {
+  font-size: inherit;
+  grid-column: span 2;
+  border: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--key-bg);
+  background-color: hsl(
+    var(--hue, var(--key-bg-h)),
+    var(--saturation, var(--key-bg-s)),
+    calc(var(--lightness-offset, 0%) + var(--lightness, var(--key-bg-l)))
+  );
+  color: var(--key-text-color);
+  fill: currentColor;
+  text-transform: uppercase;
+  border-radius: 0.25em;
+  cursor: pointer;
+  user-select: none;
+}
+
+.keyboard button:not(:hover,:focus) {
+  transition: background-color 500ms ease-in-out;
+}
+
+.keyboard button[data-key="↵"],
+.keyboard button[data-key="←"] {
+  grid-column: span 3;
+}
+
+.keyboard button > svg {
+  width: 1.75em;
+  height: 1.75em;
+  pointer-events: none;
+}
+
+.keyboard button:disabled {
+  cursor: not-allowed;
+}
+
+.keyboard button:not(:disabled):is(:hover, :focus) {
+  --lightness-offset: 10%;
+}
+
+.keyboard button[data-state="absent"] {
+  --hue: var(--key-bg-absent-h);
+  --saturation: var(--key-bg-absent-s);
+  --lightness: var(--key-bg-absent-lightness);
+}
+
+.keyboard button[data-state="present"] {
+  --hue: var(--key-bg-present-h);
+  --saturation: var(--key-bg-present-s);
+  --lightness: var(--key-bg-present-l);
+}
+
+.keyboard button[data-state="correct"] {
+  --hue: var(--key-bg-correct-h);
+  --saturation: var(--key-bg-correct-s);
+  --lightness: var(--key-bg-correct-l);
+  color: var(--key-evaluated-text-color)
+}

@@ -1,0 +1,245 @@
+:root {
+  --green: #6aaa64;
+  --dark-green: #538d4e;
+  --yellow: #c9b458;
+  --dark-yellow: #b59f3b;
+  --light-gray: #d8d8d8;
+  --gray: #86888a;
+  --dark-gray: #939598;
+  --white: #fff;
+  --black: #212121;
+  --orange: #f5793a;
+  --blue: #85c0f9;
+
+  --green-hsl: 115, 29%, 53%;
+  --dark-green-hsl: 115, 29%, 43%;
+  --yellow-hsl: 49, 51%, 57%;
+  --dark-yellow-hsl: 49, 51%, 47%;
+  --light-gray-hsl: 0, 0%, 85%;
+  --gray-hsl: 210, 2%, 53%;
+  --dark-gray-hsl: 216, 2%, 59%;
+  --white-hsl: 0, 0%, 100%;
+  --black-hsl: 0, 0%, 13%;
+  --orange-hsl: 20, 90%, 59%;
+  --blue-hsl: 209, 91%, 75%;
+
+  --green-h: 115;
+  --green-s: 29%;
+  --green-l: 53%;
+
+  --dark-green-h: 115;
+  --dark-green-s: 29%;
+  --dark-green-l: 43%;
+
+  --yellow-h: 49;
+  --yellow-s: 51%;
+  --yellow-l: 57%;
+
+  --dark-yellow-h: 49;
+  --dark-yellow-s: 51%;
+  --dark-yellow-l: 47%;
+
+  --light-gray-h: 0;
+  --light-gray-s: 0%;
+  --light-gray-l: 85%;
+
+  --gray-h: 210;
+  --gray-s: 2%;
+  --gray-l: 53%;
+
+  --dark-gray-h: 216;
+  --dark-gray-s: 2%;
+  --dark-gray-l: 59%;
+
+  --white-h: 0;
+  --white-s: 0%;
+  --white-l: 100%;
+
+  --black-h: 0;
+  --black-s: 0%;
+  --black-l: 13%;
+
+  --orange-h: 20;
+  --orange-s: 90%;
+  --orange-l: 59%;
+
+  --blue-h: 209;
+  --blue-s: 91%;
+  --blue-l: 75%;
+
+  --font-family-serif: Times New Roman, Georgia, Garamond, serif;
+  --font-family-sans-serif: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
+    Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+
+  --header-height: 50px;
+  --keyboard-height: 200px;
+  --game-max-width: 500px;
+}
+
+@media (prefers-color-scheme: light) {
+  :root, [data-theme="light"] {
+    --color-tone-1: #000000;
+    --color-tone-2: #787c7e;
+    --color-tone-3: #878a8c;
+    --color-tone-4: #d3d6da;
+    --color-tone-5: #edeff1;
+    --color-tone-6: #f6f7f8;
+    --color-tone-7: #ffffff;
+
+    --color-tone-1-h: 0;
+    --color-tone-1-s: 0%;
+    --color-tone-1-l: 0%;
+
+    --color-tone-2-h: 200;
+    --color-tone-2-s: 2%;
+    --color-tone-2-l: 48%;
+
+    --color-tone-3-h: 204;
+    --color-tone-3-s: 2%;
+    --color-tone-3-l: 54%;
+
+    --color-tone-4-h: 214;
+    --color-tone-4-s: 9%;
+    --color-tone-4-l: 84%;
+
+    --color-tone-5-h: 210;
+    --color-tone-5-s: 12%;
+    --color-tone-5-l: 94%;
+
+    --color-tone-6-h: 210;
+    --color-tone-6-s: 12%;
+    --color-tone-6-l: 97%;
+
+    --color-tone-7-h: 0;
+    --color-tone-7-s: 0%;
+    --color-tone-7-l: 100%;
+
+    --color-background: var(--color-tone-7);
+    --color-nav-hover: #f4f4f4;
+    --opacity-50: rgba(255, 255, 255, 0.5);
+
+    --color-present: var(--yellow);
+    --color-present-h: var(--yellow-h);
+    --color-present-s: var(--yellow-s);
+    --color-present-l: var(--yellow-l);
+
+    --color-correct: var(--green);
+    --color-correct-h: var(--green-h);
+    --color-correct-s: var(--green-s);
+    --color-correct-l: var(--green-l);
+
+    --color-absent: var(--color-tone-2);
+    --color-absent-h: var(--color-tone-2-h);
+    --color-absent-s: var(--color-tone-2-s);
+    --color-absent-l: var(--color-tone-2-l);
+
+    --tile-text-color: var(--color-tone-7);
+    --key-text-color: var(--color-tone-1);
+    --key-evaluated-text-color: var(--color-tone-7);
+
+    --key-bg: var(--color-tone-4);
+    --key-bg-present: var(--color-present);
+    --key-bg-correct: var(--color-correct);
+    --key-bg-absent: var(--color-absent);
+
+    --key-bg-h: var(--color-tone-4-h);
+    --key-bg-s: var(--color-tone-4-s);
+    --key-bg-l: var(--color-tone-4-l);
+
+    --key-bg-present-h: var(--color-present-h);
+    --key-bg-present-s: var(--color-present-s);
+    --key-bg-present-l: var(--color-present-l);
+
+    --key-bg-correct-h: var(--color-correct-h);
+    --key-bg-correct-s: var(--color-correct-s);
+    --key-bg-correct-l: var(--color-correct-l);
+
+    --key-bg-absent-h: var(--color-absent-h);
+    --key-bg-absent-s: var(--color-absent-s);
+    --key-bg-absent-l: var(--color-absent-l);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root, [data-theme="dark"] {
+    --color-tone-1: #ffffff;
+    --color-tone-2: #818384;
+    --color-tone-3: #565758;
+    --color-tone-4: #3a3a3c;
+    --color-tone-5: #272729;
+    --color-tone-6: #1a1a1b;
+    --color-tone-7: #121213;
+
+    --color-tone-1-h: 0;
+    --color-tone-1-s: 0%;
+    --color-tone-1-l: 100%;
+
+    --color-tone-2-h: 200;
+    --color-tone-2-s: 1%;
+    --color-tone-2-l: 51%;
+
+    --color-tone-3-h: 210;
+    --color-tone-3-s: 1%;
+    --color-tone-3-l: 34%;
+
+    --color-tone-4-h: 240;
+    --color-tone-4-s: 2%;
+    --color-tone-4-l: 23%;
+
+    --color-tone-5-h: 240;
+    --color-tone-5-s: 3%;
+    --color-tone-5-l: 16%;
+
+    --color-tone-6-h: 240;
+    --color-tone-6-s: 2%;
+    --color-tone-6-l: 10%;
+
+    --color-tone-7-h: 240;
+    --color-tone-7-s: 3%;
+    --color-tone-7-l: 7%;
+
+    --color-background: var(--color-tone-7);
+    --color-nav-hover: #2f2f31;
+    --opacity-50: rgba(0, 0, 0, 0.5);
+
+    --color-present: var(--dark-yellow);
+    --color-present-h: var(--dark-yellow-h);
+    --color-present-s: var(--dark-yellow-s);
+    --color-present-l: var(--dark-yellow-l);
+
+    --color-correct: var(--dark-green);
+    --color-correct-h: var(--dark-green-h);
+    --color-correct-s: var(--dark-green-s);
+    --color-correct-l: var(--dark-green-l);
+
+    --color-absent: var(--color-tone-4);
+    --color-absent-h: var(--color-tone-4-h);
+    --color-absent-s: var(--color-tone-4-s);
+    --color-absent-l: var(--color-tone-4-l);
+
+    --tile-text-color: var(--color-tone-1);
+    --key-text-color: var(--color-tone-1);
+    --key-evaluated-text-color: var(--color-tone-1);
+
+    --key-bg: var(--color-tone-2);
+    --key-bg-present: var(--color-present);
+    --key-bg-correct: var(--color-correct);
+    --key-bg-absent: var(--color-absent);
+
+    --key-bg-h: var(--color-tone-2-h);
+    --key-bg-s: var(--color-tone-2-s);
+    --key-bg-l: var(--color-tone-2-l);
+
+    --key-bg-present-h: var(--color-present-h);
+    --key-bg-present-s: var(--color-present-s);
+    --key-bg-present-l: var(--color-present-l);
+
+    --key-bg-correct-h: var(--color-correct-h);
+    --key-bg-correct-s: var(--color-correct-s);
+    --key-bg-correct-l: var(--color-correct-l);
+
+    --key-bg-absent-h: var(--color-absent-h);
+    --key-bg-absent-s: var(--color-absent-s);
+    --key-bg-absent-l: var(--color-absent-l);
+  }
+}
