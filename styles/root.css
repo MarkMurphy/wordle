@@ -243,3 +243,7 @@
     --key-bg-absent-l: var(--color-absent-l);
   }
 }
+
+:root {
+  color: var(--color-tone-1);
+}

@@ -21,7 +21,6 @@ html, body {
   margin: 0 auto;
   padding: 1em;
   padding-top: var(--header-height);
-  /* color: white; */
   background-color: var(--color-background);
   font-family: var(--font-family-sans-serif);
   font-size: clamp(0.8rem, 2.5vmin, 1.5rem);
@@ -77,7 +76,7 @@ header .title {
   border: none;
   background: none;
   cursor: pointer;
-  color: hsl(200, 1%, 35%);
+  color: inherit;
   margin: 0;
   padding: 0;
 }
@@ -158,6 +157,10 @@ header .title {
   font-size: 16px;
 }
 
+.instructions .modal-body > p:first-child {
+  margin-top: 0;
+}
+
 .instructions .examples {
   border-top: 1px solid var(--color-tone-4);
   border-bottom: 1px solid var(--color-tone-4);
@@ -211,20 +214,30 @@ header .title {
  * Statistics
  */
 .statistics {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  gap: 1rem;
 }
 
-.statistics:not(.modal) {
+.statistics .title {
+  text-transform: uppercase;
+}
+
+.statistics-container {
   display: flex;
   width: 100%;
   margin-bottom: 1em;
 }
 
-.statistic-container {
+.statistic {
   flex: 1;
 }
 
-.statistic-container .statistic {
+.statistic .value {
   font-size: 36px;
   font-weight: 400;
   display: flex;
@@ -235,7 +248,7 @@ header .title {
   font-variant-numeric: proportional-nums;
 }
 
-.statistic-container .label {
+.statistic .label {
   font-size: 12px;
   display: flex;
   align-items: center;
@@ -253,8 +266,6 @@ header .title {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 50%;
-  padding-left: 12px;
 }
 
 .share button {
@@ -268,32 +279,31 @@ header .title {
   border-radius: 4px;
   padding: 0.8em 2em;
   gap: .4em;
-  opacity: 1;
 }
 
-.share button:is(:hover,:focus) {
-  opacity: 0.9;
+@media (hover: hover) {
+  [data-theme="dark"] .share button:is(:hover,:focus) {
+    background-color: hsl(
+      var(--key-bg-correct-h),
+      var(--key-bg-correct-s),
+      calc(var(--key-bg-correct-l) + 10%)
+    )
+  }
+
+  [data-theme="light"] .share button:is(:hover,:focus) {
+    background-color: hsl(
+      var(--key-bg-correct-h),
+      var(--key-bg-correct-s),
+      calc(var(--key-bg-correct-l) - 10%)
+    )
+  }
 }
 
-.container {
+.statistics .footer {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 16px 0;
-  gap: 1em;
-}
-
-.footer {
-  display: flex;
-  align-items: center;
   width: 100%;
-}
-
-.countdown {
-  border-right: 1px solid var(--color-tone-4);
-  padding-right: 12px;
-  width: 50%;
 }
 
 
