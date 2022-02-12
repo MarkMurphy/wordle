@@ -18,6 +18,10 @@ const START_DATE = new Date(2022, 0, 1);
 const wordle = Math.floor((Date.now() - START_DATE) / 1000 / 60 / 60 / 24);
 const word = words[wordle % words.length];
 
+const settings = {
+  disableAbsentLetters: false,
+};
+
 const root = document.documentElement;
 const theme = window.matchMedia?.("(prefers-color-scheme: light)") || {};
 
@@ -30,19 +34,15 @@ function changeTheme({ matches }) {
 
 theme.addEventListener("change", changeTheme);
 
-const settings = {
-  disableAbsentLetters: false,
-};
-
 const handleSettingChange = (event) => {
-  const setting = e.target.dataset.setting;
+  const setting = event.target.dataset.setting;
 
   if (setting == null) {
     return;
   }
 
   if (setting === "disableAbsentLetters") {
-    settings.disableAbsentLetters = Boolean(e.target.checked);
+    settings.disableAbsentLetters = Boolean(event.target.checked);
   }
 };
 
