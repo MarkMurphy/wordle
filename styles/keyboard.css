@@ -35,7 +35,7 @@
 }
 
 .keyboard button:not(:hover,:focus) {
-  transition: background-color 500ms ease-in-out;
+  transition: background-color 200ms ease-in-out;
 }
 
 .keyboard button[data-key="↵"],
@@ -53,8 +53,10 @@
   cursor: not-allowed;
 }
 
-.keyboard button:not(:disabled):is(:hover, :focus) {
-  --lightness-offset: 10%;
+@media (hover: hover) {
+  .keyboard button:not(:disabled):is(:hover, :focus) {
+    --lightness-offset: 10%;
+  }
 }
 
 .keyboard button[data-state="absent"] {

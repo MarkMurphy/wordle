@@ -354,7 +354,7 @@ function checkWinLose(guess, tiles) {
   const remainingTiles = grid.querySelectorAll(":not([data-letter])");
   if (remainingTiles.length === 0) {
     stopInteraction();
-    showAlert("Can’t all be winners…look’n at you Alyssa.", null);
+    showAlert("Can’t all be winners…Alyssa", null);
     showAlert(word.toUpperCase(), null);
   }
 }
