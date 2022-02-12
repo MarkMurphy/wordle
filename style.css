@@ -40,7 +40,7 @@ header {
   position: fixed;
   top: 0;
   left: 0;
-  height: 3em;
+  height: var(--header-height);
   padding: 0 1em;
   border-bottom: 1px solid var(--color-tone-4);
 }
@@ -98,8 +98,8 @@ header .title {
   justify-content: center;
   align-content: center;
   flex-grow: 1;
-  grid-template-columns: repeat(5, 3em);
-  grid-auto-rows: 3em;
+  grid-template-columns: repeat(5, 3.75em);
+  grid-auto-rows: 3.75em;
   gap: .25em;
   margin-bottom: 1em;
 }
