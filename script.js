@@ -13,6 +13,11 @@ const keyboard = document.querySelector("[data-keyboard]");
 const grid = document.querySelector("[data-letter-grid]");
 const alerts = document.querySelector("[data-alert-container]");
 
+const gamesPlayed = document.querySelector("[data-statistic-games-played]");
+const winPercentage = document.querySelector("[data-statistic-win-percentage]");
+const currentStreak = document.querySelector("[data-statistic-current-streak]");
+const bestStreak = document.querySelector("[data-statistic-best-streak]");
+
 const WORD_LENGTH = 5;
 const GUESS_LIMIT = 6;
 const START_DATE = new Date(2022, 0, 1);
@@ -23,10 +28,70 @@ const settings = {
   disableAbsentLetters: false,
 };
 
+const STORAGE_STATE_KEY = "wordle-state";
+const STORAGE_STATE_DEFAULT = {};
+const STORAGE_STATISTICS_KEY = "wordle-statistics";
+const STORAGE_STATISTICS_DEFAULT = {
+  currentStreak: 0,
+  maxStreak: 0,
+  guesses: {
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+    6: 0,
+    fail: 0,
+  },
+  winPercentage: 0,
+  gamesPlayed: 0,
+  gamesWon: 0,
+  averageGuesses: 0,
+};
+
+const storage = {
+  state: {
+    read() {
+      try {
+        const text = localStorage.getItem(STORAGE_STATE_KEY);
+        const value = text ? JSON.parse(text) : STORAGE_STATE_DEFAULT;
+        // TODO: Assert value matches expected data structure
+        return value;
+      } catch (error) {
+        console.error(error);
+        return STORAGE_STATE_DEFAULT;
+      }
+    },
+    write() {
+      localStorage.setItem(STORAGE_STATE_KEY, JSON.stringify(value));
+    },
+  },
+  stats: {
+    read() {
+      try {
+        const text = localStorage.getItem(STORAGE_STATISTICS_KEY);
+        const value = text ? JSON.parse(text) : STORAGE_STATISTICS_DEFAULT;
+        // TODO: Assert value matches expected data structure
+        return value;
+      } catch (error) {
+        console.error(error);
+        return STORAGE_STATISTICS_DEFAULT;
+      }
+    },
+    write(value) {
+      localStorage.setItem(STORAGE_STATISTICS_KEY, JSON.stringify(value));
+    },
+  },
+};
+
+const stats = storage.stats.read();
+const state = storage.state.read();
+
 const root = document.documentElement;
 const theme = window.matchMedia?.("(prefers-color-scheme: light)") || {};
 
 changeTheme(theme);
+renderStatistics();
 startInteraction();
 
 function changeTheme({ matches }) {
@@ -101,6 +166,7 @@ function getSharableText() {
     `Wordle ${wordle} ${guesses.length}/${GUESS_LIMIT}`,
     ``,
     ...guesses,
+    ``,
   ].join("\n");
 
   return text;
@@ -408,18 +474,128 @@ function danceTiles(tiles) {
 
 function checkWinLose(guess, tiles) {
   if (guess === answer) {
-    stopInteraction();
-    showAlert("You Win!", 5000);
-    danceTiles(tiles).then(() => setTimeout(openStatistics, 1000));
-    return;
+    return win(tiles);
   }
 
   const remainingTiles = grid.querySelectorAll(":not([data-letter])");
   if (remainingTiles.length === 0) {
-    stopInteraction();
-    showAlert(answer.toUpperCase(), null);
-    showStats();
+    return lose(tiles);
   }
+}
+
+function win(tiles) {
+  stopInteraction();
+  updateStats({
+    guessCount: getGuessCount(tiles),
+    isWin: true,
+  });
+  showAlert("You Win!", 5000);
+  danceTiles(tiles).then(() => setTimeout(openStatistics, 3000));
+}
+
+function lose(tiles) {
+  stopInteraction();
+  updateStats({
+    guessCount: getGuessCount(tiles),
+    isWin: false,
+  });
+  showAlert(answer.toUpperCase(), null);
+  setTimeout(openStatistics, 3000);
+}
+
+function getGuessCount(tiles) {
+  const rowIndex =
+    Math.floor(
+      Array.from(grid.children).indexOf(tiles[tiles.length - 1]) / WORD_LENGTH
+    ) % GUESS_LIMIT;
+  return rowIndex + 1;
+}
+
+function updateStats({ guessCount, isWin }) {
+  stats.gamesPlayed += 1;
+  stats.gamesWon += isWin ? 1 : 0;
+  stats.winPercentage = Math.round((stats.gamesWon / stats.gamesPlayed) * 100);
+  stats.guesses[guessCount] += 1;
+  stats.guesses.fail += isWin ? 0 : 1;
+  stats.averageGuesses = computeAverageGuesses(stats.guesses, stats.gamesWon);
+  stats.currentStreak = isWin ? stats.currentStreak + 1 : 0;
+  stats.maxStreak = Math.max(stats.currentStreak, stats.maxStreak);
+
+  storage.stats.write(stats);
+
+  renderStatistics();
+}
+
+function renderStatistics() {
+  gamesPlayed.textContent = stats.gamesPlayed;
+  winPercentage.textContent = stats.winPercentage;
+  currentStreak.textContent = stats.currentStreak;
+  bestStreak.textContent = stats.maxStreak;
+
+  const element = document.querySelector("[data-distribution]");
+  const distributon = computeGuessDistributon();
+
+  if (distributon == null) {
+    element.textContent = "No Data";
+    return;
+  }
+
+  const container = document.createElement("div");
+  container.classList.add("graph-container");
+
+  Object.entries(distributon).forEach(([number, value]) => {
+    const guess = document.createElement("div");
+    guess.classList.add("guess");
+    guess.textContent = number;
+
+    const graph = document.createElement("div");
+    graph.classList.add("graph");
+
+    const count = document.createElement("div");
+    count.classList.add("count");
+    count.textContent = value.count;
+    count.style.width = value.width + "%";
+
+    // highlight is true if the current game has ended, it highlights the guess number taken this game
+    if (value.highlight) {
+      count.classList.add("highlight");
+    }
+
+    graph.append(count);
+    container.append(guess, graph);
+  });
+
+  element.replaceChildren(container);
+}
+
+function computeGuessDistributon() {
+  const counts = Object.values(stats.guesses);
+  if (counts.every((count) => count === 0)) {
+    return null;
+  }
+
+  const max = Math.max(...counts);
+  const length = counts.length;
+
+  const distribution = {};
+  for (let guess = 1; guess < length; guess++) {
+    const count = stats.guesses[guess];
+    const width = Math.round((count / max) * 100);
+    distribution[guess] = {
+      count,
+      width,
+    };
+  }
+
+  return distribution;
+}
+
+function computeAverageGuesses(guesses, gamesWon) {
+  return Math.round(
+    Object.entries(guesses).reduce((sum, [key, value]) => {
+      return key !== "fail" ? (sum += key * value) : sum;
+    }, 0) / gamesWon
+  );
 }
 
 /**
