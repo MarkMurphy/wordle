@@ -14,9 +14,10 @@ const grid = document.querySelector("[data-letter-grid]");
 const alerts = document.querySelector("[data-alert-container]");
 
 const WORD_LENGTH = 5;
+const GUESS_LIMIT = 6;
 const START_DATE = new Date(2022, 0, 1);
 const wordle = Math.floor((Date.now() - START_DATE) / 1000 / 60 / 60 / 24);
-const word = words[wordle % words.length];
+const answer = words[wordle % words.length];
 
 const settings = {
   disableAbsentLetters: false,
@@ -85,7 +86,7 @@ async function share() {
 function getSharableText() {
   const letters = [...grid.querySelectorAll("[data-letter]")];
   const guesses = letters.reduce((guesses, letter, index) => {
-    const guess = Math.floor(index / WORD_LENGTH) % 6;
+    const guess = Math.floor(index / WORD_LENGTH) % GUESS_LIMIT;
 
     if (guesses[guess] == null) {
       guesses[guess] = "";
@@ -96,9 +97,11 @@ function getSharableText() {
     return guesses;
   }, []);
 
-  const text = [`Wordle ${wordle} ${guesses.length}/6`, ``, ...guesses].join(
-    "\n"
-  );
+  const text = [
+    `Wordle ${wordle} ${guesses.length}/${GUESS_LIMIT}`,
+    ``,
+    ...guesses,
+  ].join("\n");
 
   return text;
 }
@@ -210,9 +213,34 @@ function submit() {
 
   stopInteraction();
 
-  activeTiles.forEach((...args) => {
-    flipTile(...args, guess);
+  const results = compare(guess, answer);
+  activeTiles.forEach(flipTile.bind(null, guess, results));
+}
+
+function compare(guess, answer) {
+  const results = Array(WORD_LENGTH).fill(STATE_ABSENT);
+  const remaining = [...answer];
+
+  Array.from(guess).forEach((letter, index) => {
+    if (remaining[index] === letter) {
+      delete remaining[index];
+      results[index] = STATE_CORRECT;
+    }
   });
+
+  results.forEach((state, index) => {
+    if (state === STATE_CORRECT) {
+      return;
+    }
+
+    const letterIndex = remaining.indexOf(guess[index]);
+    if (letterIndex >= 0) {
+      delete remaining[letterIndex];
+      results[index] = STATE_PRESENT;
+    }
+  });
+
+  return results;
 }
 
 function deleteKey() {
@@ -232,37 +260,37 @@ function getActiveTitles() {
   return grid.querySelectorAll('[data-state="active"]');
 }
 
-function flipTile(tile, index, array, guess) {
+function flipTile(guess, results, tile, index, tiles) {
+  setTimeout(
+    () => tile.classList.add("flip"),
+    (index * FLIP_ANIMATION_DURATION) / 2
+  );
+
   const letter = tile.dataset.letter;
   const key = keyboard.querySelector(`[data-key="${letter}"i]`);
-  setTimeout(() => {
-    tile.classList.add("flip");
-  }, (index * FLIP_ANIMATION_DURATION) / 2);
 
   tile.addEventListener(
     "transitionend",
     () => {
       tile.classList.remove("flip");
-      if (word[index] === letter) {
-        tile.dataset.state = STATE_CORRECT;
-        key.dataset.state = STATE_CORRECT;
-      } else if (word.includes(letter)) {
-        tile.dataset.state = STATE_PRESENT;
-        key.dataset.state = STATE_PRESENT;
-      } else {
-        tile.dataset.state = STATE_ABSENT;
-        key.dataset.state = STATE_ABSENT;
-        if (settings.disableAbsentLetters) {
-          key.disabled = true;
-        }
+
+      const state = results[index];
+      tile.dataset.state = state;
+
+      if (key.dataset.state == null) {
+        key.dataset.state = state;
       }
 
-      if (index === array.length - 1) {
+      if (key.dataset.state === STATE_ABSENT && settings.disableAbsentLetters) {
+        key.disabled = true;
+      }
+
+      if (index === tiles.length - 1) {
         tile.addEventListener(
           "transitionend",
           () => {
             startInteraction();
-            checkWinLose(guess, array);
+            checkWinLose(guess, tiles);
           },
           { once: true }
         );
@@ -375,7 +403,7 @@ function danceTiles(tiles) {
 }
 
 function checkWinLose(guess, tiles) {
-  if (guess === word) {
+  if (guess === answer) {
     stopInteraction();
     showAlert("You Win!", 5000);
     danceTiles(tiles).then(() => setTimeout(openStatistics, 1000));
@@ -385,7 +413,7 @@ function checkWinLose(guess, tiles) {
   const remainingTiles = grid.querySelectorAll(":not([data-letter])");
   if (remainingTiles.length === 0) {
     stopInteraction();
-    showAlert(word.toUpperCase(), null);
+    showAlert(answer.toUpperCase(), null);
     showStats();
   }
 }
