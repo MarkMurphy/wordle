@@ -3,16 +3,20 @@
  * Keyboard
  */
  .keyboard {
+  --gap: 0.25em;
+  --rows: 3;
   display: grid;
   grid-template-columns: repeat(20, minmax(auto, 1.25em));
-  grid-auto-rows: 3em;
-  gap: 0.25em;
+  grid-auto-rows: min(60px, 4em);
+  gap: var(--gap);
   justify-content: center;
   touch-action: manipulation;
 }
 
 .keyboard button {
-  font-size: inherit;
+  font-size: 14px;
+  font-size: max(14px, 0.75em);
+  font-weight: 500;
   grid-column: span 2;
   border: none;
   margin: 0;
@@ -32,6 +36,7 @@
   border-radius: 0.25em;
   cursor: pointer;
   user-select: none;
+  text-shadow: 1px 1px 1px rgba(var(--opacity-rgb), 0.15);
 }
 
 .keyboard button:not(:hover,:focus) {
@@ -62,7 +67,7 @@
 .keyboard button[data-state="absent"] {
   --hue: var(--key-bg-absent-h);
   --saturation: var(--key-bg-absent-s);
-  --lightness: var(--key-bg-absent-lightness);
+  --lightness: var(--key-bg-absent-l);
 }
 
 .keyboard button[data-state="present"] {

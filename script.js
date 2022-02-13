@@ -277,6 +277,10 @@ function flipTile(guess, results, tile, index, tiles) {
       const state = results[index];
       tile.dataset.state = state;
 
+      if (state === STATE_CORRECT) {
+        key.dataset.state = state;
+      }
+
       if (key.dataset.state == null) {
         key.dataset.state = state;
       }

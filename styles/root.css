@@ -116,6 +116,8 @@
 
     --color-background: var(--color-tone-7);
     --color-nav-hover: #f4f4f4;
+
+    --opacity-rgb: 255, 255, 255;
     --opacity-50: rgba(255, 255, 255, 0.5);
 
     --color-present: var(--yellow);
@@ -200,6 +202,8 @@
 
     --color-background: var(--color-tone-7);
     --color-nav-hover: #2f2f31;
+
+    --opacity-rgb: 0, 0, 0;
     --opacity-50: rgba(0, 0, 0, 0.5);
 
     --color-present: var(--dark-yellow);
