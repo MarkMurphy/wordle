@@ -286,7 +286,7 @@ const handleSettingChange = (event) => {
     setColorBlindMode(value);
   }
 
-  gtag("event", "settings_change", {
+  gtag("event", "setting_change", {
     event_category: "Settings",
     event_label: setting,
     event_action: "change_setting",
