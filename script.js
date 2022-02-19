@@ -173,8 +173,9 @@ function getWordleNumber(date) {
 }
 
 function newGame() {
-  gtag("event", "new", {
+  gtag("event", "game_start", {
     event_category: "Games",
+    event_action: "new",
   });
   const now = Date.now();
   const number = getWordleNumber(now);
@@ -200,8 +201,9 @@ function newGame() {
 }
 
 function resumeGame(gameState) {
-  gtag("event", "resume", {
+  gtag("event", "game_resume", {
     event_category: "Games",
+    event_action: "resume",
   });
   gameState.boardState?.forEach((guess, rowIndex) => {
     Array.from(guess).forEach((letter, letterIndex) => {
@@ -284,9 +286,10 @@ const handleSettingChange = (event) => {
     setColorBlindMode(value);
   }
 
-  gtag("event", "change", {
+  gtag("event", "settings_change", {
     event_category: "Settings",
     event_label: setting,
+    event_action: "change_setting",
     value,
   });
 
@@ -309,6 +312,7 @@ shareButton.addEventListener("click", share);
 async function share() {
   gtag("event", "share", {
     event_category: "Shares",
+    event_action: "share",
   });
 
   const text = getSharableText();
@@ -728,6 +732,7 @@ function win(tiles) {
   gtag("event", "win", {
     event_category: "Games",
     event_label: gameState.solution,
+    event_action: "win",
     value: getGuessCount(),
   });
 }
@@ -746,6 +751,7 @@ function fail(tiles) {
   gtag("event", "lose", {
     event_category: "Games",
     event_label: gameState.solution,
+    event_action: "lose",
   });
 }
 
