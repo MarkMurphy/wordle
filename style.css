@@ -1,14 +1,17 @@
-@import './styles/root.css';
-@import './styles/animations.css';
-@import './styles/alerts.css';
-@import './styles/modals.css';
-@import './styles/keyboard.css';
+@import "./styles/root.css";
+@import "./styles/animations.css";
+@import "./styles/alerts.css";
+@import "./styles/modals.css";
+@import "./styles/keyboard.css";
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   min-height: 100%;
 }
 
@@ -87,8 +90,6 @@ header .title {
   pointer-events: none;
 }
 
-
-
 /**
  * Grid
  */
@@ -99,7 +100,7 @@ header .title {
   flex-grow: 1;
   grid-template-columns: repeat(5, 3.75em);
   grid-auto-rows: 3.75em;
-  gap: .25em;
+  gap: 0.25em;
   margin-bottom: 1em;
 }
 
@@ -148,8 +149,6 @@ header .title {
   animation: dance 500ms ease-in-out;
 }
 
-
-
 /**
  * Instructions
  */
@@ -174,15 +173,13 @@ header .title {
   display: grid;
   grid-template-columns: repeat(5, 2em);
   grid-auto-rows: 2em;
-  gap: .25em;
+  gap: 0.25em;
   margin: 0 0 1em;
 }
 
 .instructions .tile:not() {
   font-size: 1.25em;
 }
-
-
 
 /**
  * Settings
@@ -207,8 +204,6 @@ header .title {
   font-size: 12px;
   color: var(--color-tone-2);
 }
-
-
 
 /**
  * Statistics
@@ -281,15 +276,15 @@ header .title {
 .guess-distribution .count {
   height: 100%;
   min-width: min-content;
-  width: min-content;
+  width: 0;
   position: relative;
   background-color: var(--color-absent);
   display: flex;
   justify-content: flex-end;
   padding: 0 8px;
-
   font-weight: bold;
   color: var(--tile-text-color);
+  transition: width 750ms ease-in-out;
 }
 
 .guess-distribution .count.highlight {
@@ -312,24 +307,24 @@ header .title {
   font-size: 20px;
   border-radius: 4px;
   padding: 0.8em 2em;
-  gap: .4em;
+  gap: 0.4em;
 }
 
 @media (hover: hover) {
-  [data-theme="dark"] .share button:is(:hover,:focus) {
+  [data-theme="dark"] .share button:is(:hover, :focus) {
     background-color: hsl(
       var(--key-bg-correct-h),
       var(--key-bg-correct-s),
       calc(var(--key-bg-correct-l) + 10%)
-    )
+    );
   }
 
-  [data-theme="light"] .share button:is(:hover,:focus) {
+  [data-theme="light"] .share button:is(:hover, :focus) {
     background-color: hsl(
       var(--key-bg-correct-h),
       var(--key-bg-correct-s),
       calc(var(--key-bg-correct-l) - 10%)
-    )
+    );
   }
 }
 
@@ -339,8 +334,6 @@ header .title {
   justify-content: center;
   width: 100%;
 }
-
-
 
 /* The switch - the box around the slider */
 .switch {
@@ -364,7 +357,7 @@ header .title {
   inset: 0;
   background: var(--color-tone-3);
   border-radius: 999px;
-  transition: .4s;
+  transition: 0.4s;
 }
 
 .switch .slider:before {
@@ -376,7 +369,7 @@ header .title {
   left: 2px;
   background-color: var(--white);
   border-radius: 50%;
-  transition: .3s;
+  transition: 0.3s;
 }
 
 .switch input:checked + .slider {

@@ -1,6 +1,18 @@
 import dictionary from "./scripts/dictionary.js";
 import words from "./scripts/words.js";
 
+/**
+ * Trick to restart an element's animation
+ *
+ * @param {HTMLElement} element
+ * @return void
+ *
+ * @see https://www.charistheo.io/blog/2021/02/restart-a-css-animation-with-javascript/#restarting-a-css-animation
+ */
+const reflow = (element) => {
+  element.offsetHeight; // eslint-disable-line no-unused-expressions
+};
+
 const DANCE_ANIMATION_DURATION = 500;
 const FLIP_ANIMATION_DURATION = 500;
 const MODAL_CLASS_NAME_OPEN = "open";
@@ -8,28 +20,45 @@ const STATE_ACTIVE = "active";
 const STATE_ABSENT = "absent";
 const STATE_PRESENT = "present";
 const STATE_CORRECT = "correct";
+const START_DATE = new Date(2022, 0, 1);
+const WORD_LENGTH = 5;
+const GUESS_LIMIT = 6;
+const WIN_MESSAGE = [
+  "Genius",
+  "Magnificent",
+  "Impressive",
+  "Splendid",
+  "Great",
+  "Phew",
+];
 
 const keyboard = document.querySelector("[data-keyboard]");
 const grid = document.querySelector("[data-letter-grid]");
+const tiles = Array.from(grid.children);
 const alerts = document.querySelector("[data-alert-container]");
-
 const gamesPlayed = document.querySelector("[data-statistic-games-played]");
 const winPercentage = document.querySelector("[data-statistic-win-percentage]");
 const currentStreak = document.querySelector("[data-statistic-current-streak]");
 const bestStreak = document.querySelector("[data-statistic-best-streak]");
 
-const WORD_LENGTH = 5;
-const GUESS_LIMIT = 6;
-const START_DATE = new Date(2022, 0, 1);
-const wordle = Math.floor((Date.now() - START_DATE) / 1000 / 60 / 60 / 24);
-const answer = words[wordle % words.length];
-
 const settings = {
   disableAbsentLetters: false,
 };
 
+const GAME_STATUS_IN_PROGRESS = "IN_PROGRESS";
+const GAME_STATUS_WIN = "WIN";
+const GAME_STATUS_FAIL = "FAIL";
+
 const STORAGE_STATE_KEY = "wordle-state";
-const STORAGE_STATE_DEFAULT = {};
+const STORAGE_STATE_DEFAULT = {
+  boardState: null,
+  evaluations: null,
+  rowIndex: 0,
+  solution: null,
+  gameStatus: null,
+  lastPlayedAt: null,
+  lastCompletedAt: null,
+};
 const STORAGE_STATISTICS_KEY = "wordle-statistics";
 const STORAGE_STATISTICS_DEFAULT = {
   currentStreak: 0,
@@ -55,14 +84,13 @@ const storage = {
       try {
         const text = localStorage.getItem(STORAGE_STATE_KEY);
         const value = text ? JSON.parse(text) : STORAGE_STATE_DEFAULT;
-        // TODO: Assert value matches expected data structure
         return value;
       } catch (error) {
         console.error(error);
         return STORAGE_STATE_DEFAULT;
       }
     },
-    write() {
+    write(value) {
       localStorage.setItem(STORAGE_STATE_KEY, JSON.stringify(value));
     },
   },
@@ -84,15 +112,78 @@ const storage = {
   },
 };
 
-const stats = storage.stats.read();
-const state = storage.state.read();
-
 const root = document.documentElement;
 const theme = window.matchMedia?.("(prefers-color-scheme: light)") || {};
+const gameState = storage.state.read();
 
-changeTheme(theme);
-renderStatistics();
-startInteraction();
+function init() {
+  changeTheme(theme);
+
+  const state = storage.state.read();
+  const lastCompletedWordle = getWordleNumber(state.lastCompletedAt);
+
+  switch (state.gameStatus) {
+    case GAME_STATUS_IN_PROGRESS:
+      return resumeGame(state);
+    case GAME_STATUS_FAIL:
+      if (lastCompletedWordle === getWordleNumber(Date.now())) {
+        return resumeGame(state);
+      }
+    case GAME_STATUS_WIN:
+      if (lastCompletedWordle === getWordleNumber(Date.now())) {
+        return resumeGame(state);
+      }
+    default:
+      return newGame();
+  }
+}
+
+init();
+
+function getWordleNumber(date) {
+  return Math.floor((date - START_DATE) / 1000 / 60 / 60 / 24);
+}
+
+function newGame() {
+  const now = Date.now();
+  const number = getWordleNumber(now);
+
+  Object.assign(gameState, {
+    gameStatus: GAME_STATUS_IN_PROGRESS,
+    lastPlayedAt: now,
+    solution: words[number % words.length],
+    rowIndex: 0,
+    boardState: null,
+    evaluations: null,
+  });
+
+  storage.state.write(gameState);
+
+  startInteraction();
+}
+
+function resumeGame(gameState) {
+  gameState.boardState?.forEach((guess, rowIndex) => {
+    Array.from(guess).forEach((letter, letterIndex) => {
+      const index = rowIndex * WORD_LENGTH + letterIndex;
+      const tile = tiles[index];
+      const state = gameState.evaluations[rowIndex][letterIndex];
+      setTileState(tile, state, letter);
+    });
+  });
+
+  if (gameState.gameStatus === GAME_STATUS_WIN) {
+    openStatistics();
+    return;
+  }
+
+  if (gameState.gameStatus === GAME_STATUS_FAIL) {
+    openStatistics();
+    return;
+  }
+
+  startInteraction();
+}
 
 function changeTheme({ matches }) {
   root.dataset.theme = matches ? "light" : "dark";
@@ -136,7 +227,12 @@ async function share() {
       });
       return;
     } catch (error) {
+      // Hanlde AbortError, code: 20
+      if (error.name === "AbortError") {
+        return;
+      }
       console.error("Error sharing:", error);
+      showAlert("Share failed");
     }
   }
 
@@ -144,6 +240,7 @@ async function share() {
     await navigator.clipboard.writeText(text);
     showAlert("Copied results to clipboard", 2000);
   } catch (error) {
+    // NotAllowedError, code: 0
     console.error("Could not copy results to clipboard: ", error);
   }
 }
@@ -163,7 +260,9 @@ function getSharableText() {
   }, []);
 
   const text = [
-    `Wordle ${wordle} ${guesses.length}/${GUESS_LIMIT}`,
+    `Wordle ${getWordleNumber(gameState.lastPlayedAt)} ${
+      guesses.length
+    }/${GUESS_LIMIT}`,
     ``,
     ...guesses,
     ``,
@@ -173,13 +272,17 @@ function getSharableText() {
 }
 
 function getLetterStateEmoji(state) {
+  // TODO
+  let cbmode = false;
+  let darkmode = root.dataset.theme === "dark";
+
   switch (state) {
-    case STATE_ABSENT:
-      return "⬜";
-    case STATE_PRESENT:
-      return "🟨";
     case STATE_CORRECT:
-      return "🟩";
+      return cbmode ? "🟧" : "🟩";
+    case STATE_PRESENT:
+      return cbmode ? "🟦" : "🟨";
+    case STATE_ABSENT:
+      return darkmode ? "⬛" : "⬜";
     default:
       return " ";
   }
@@ -248,7 +351,7 @@ function pressKey(key) {
     return;
   }
 
-  const activeTiles = getActiveTitles();
+  const activeTiles = getActiveTiles();
   if (activeTiles.length >= WORD_LENGTH) {
     return;
   }
@@ -260,7 +363,7 @@ function pressKey(key) {
 }
 
 function submit() {
-  const activeTiles = [...getActiveTitles()];
+  const activeTiles = [...getActiveTiles()];
   if (activeTiles.length !== WORD_LENGTH) {
     showAlert("Not enough letters");
     shakeTiles(activeTiles);
@@ -279,13 +382,25 @@ function submit() {
 
   stopInteraction();
 
-  const results = compare(guess, answer);
+  const results = compare(guess, gameState.solution);
+
+  const rowIndex =
+    Math.floor(
+      tiles.indexOf(activeTiles[activeTiles.length - 1]) / WORD_LENGTH
+    ) % GUESS_LIMIT;
+
+  gameState.rowIndex = rowIndex;
+  gameState.boardState = [...(gameState.boardState ?? []), guess];
+  gameState.evaluations = [...(gameState.evaluations ?? []), results];
+
+  storage.state.write(gameState);
+
   activeTiles.forEach(flipTile.bind(null, guess, results));
 }
 
-function compare(guess, answer) {
+function compare(guess, solution) {
   const results = Array(WORD_LENGTH).fill(STATE_ABSENT);
-  const remaining = [...answer];
+  const remaining = [...solution];
 
   Array.from(guess).forEach((letter, index) => {
     if (remaining[index] === letter) {
@@ -310,7 +425,7 @@ function compare(guess, answer) {
 }
 
 function deleteKey() {
-  const activeTiles = getActiveTitles();
+  const activeTiles = getActiveTiles();
   const lastTile = activeTiles[activeTiles.length - 1];
 
   if (lastTile == null) {
@@ -322,8 +437,33 @@ function deleteKey() {
   delete lastTile.dataset.letter;
 }
 
-function getActiveTitles() {
+function getActiveTiles() {
   return grid.querySelectorAll('[data-state="active"]');
+}
+
+function setTileState(tile, state, letter = undefined) {
+  if (letter) {
+    tile.dataset.letter = letter;
+    tile.textContent = letter;
+  } else {
+    letter = tile.dataset.letter;
+  }
+
+  const key = keyboard.querySelector(`[data-key="${letter}"i]`);
+
+  tile.dataset.state = state;
+
+  if (state === STATE_CORRECT) {
+    key.dataset.state = state;
+  }
+
+  if (key.dataset.state == null) {
+    key.dataset.state = state;
+  }
+
+  if (key.dataset.state === STATE_ABSENT && settings.disableAbsentLetters) {
+    key.disabled = true;
+  }
 }
 
 function flipTile(guess, results, tile, index, tiles) {
@@ -332,28 +472,13 @@ function flipTile(guess, results, tile, index, tiles) {
     (index * FLIP_ANIMATION_DURATION) / 2
   );
 
-  const letter = tile.dataset.letter;
-  const key = keyboard.querySelector(`[data-key="${letter}"i]`);
-
   tile.addEventListener(
     "transitionend",
     () => {
       tile.classList.remove("flip");
 
       const state = results[index];
-      tile.dataset.state = state;
-
-      if (state === STATE_CORRECT) {
-        key.dataset.state = state;
-      }
-
-      if (key.dataset.state == null) {
-        key.dataset.state = state;
-      }
-
-      if (key.dataset.state === STATE_ABSENT && settings.disableAbsentLetters) {
-        key.disabled = true;
-      }
+      setTileState(tile, state);
 
       if (index === tiles.length - 1) {
         tile.addEventListener(
@@ -390,11 +515,21 @@ function showAlert(message, duration = 1000) {
   }, duration);
 }
 
+function handleBeforeModalOpen(selector) {
+  if (selector === "#statistics") {
+    renderStatistics();
+  }
+}
+
 function openModal(selector) {
   const modal = document.querySelector(selector);
   const backdrop = modal.querySelector("[data-modal-backdrop]");
   const body = modal.querySelector("[data-modal-body]");
   const dismiss = modal.querySelector('[data-dismiss="modal"]');
+
+  if (handleBeforeModalOpen(selector) === false) {
+    return;
+  }
 
   modal.style.display = "block";
   modal.removeAttribute("aria-hidden");
@@ -473,45 +608,50 @@ function danceTiles(tiles) {
 }
 
 function checkWinLose(guess, tiles) {
-  if (guess === answer) {
-    return win(tiles);
+  if (guess === gameState.solution) {
+    return win(tiles, true);
   }
 
   const remainingTiles = grid.querySelectorAll(":not([data-letter])");
   if (remainingTiles.length === 0) {
-    return lose(tiles);
+    return fail(tiles, true);
   }
 }
 
 function win(tiles) {
   stopInteraction();
+  gameState.gameStatus = GAME_STATUS_WIN;
+  gameState.lastCompletedAt = Date.now();
+  storage.state.write(gameState);
   updateStats({
-    guessCount: getGuessCount(tiles),
+    guessCount: getGuessCount(),
     isWin: true,
   });
-  showAlert("You Win!", 5000);
+  const message = WIN_MESSAGE[Math.floor(Math.random() * WIN_MESSAGE.length)];
+  showAlert(message, 3000);
   danceTiles(tiles).then(() => setTimeout(openStatistics, 3000));
 }
 
-function lose(tiles) {
+function fail(tiles) {
   stopInteraction();
+  gameState.gameStatus = GAME_STATUS_FAIL;
+  gameState.lastCompletedAt = Date.now();
+  storage.state.write(gameState);
   updateStats({
-    guessCount: getGuessCount(tiles),
+    guessCount: getGuessCount(),
     isWin: false,
   });
-  showAlert(answer.toUpperCase(), null);
+  showAlert(gameState.solution.toUpperCase(), null);
   setTimeout(openStatistics, 3000);
 }
 
-function getGuessCount(tiles) {
-  const rowIndex =
-    Math.floor(
-      Array.from(grid.children).indexOf(tiles[tiles.length - 1]) / WORD_LENGTH
-    ) % GUESS_LIMIT;
-  return rowIndex + 1;
+function getGuessCount() {
+  return gameState.rowIndex + 1;
 }
 
 function updateStats({ guessCount, isWin }) {
+  const stats = storage.stats.read();
+
   stats.gamesPlayed += 1;
   stats.gamesWon += isWin ? 1 : 0;
   stats.winPercentage = Math.round((stats.gamesWon / stats.gamesPlayed) * 100);
@@ -522,11 +662,11 @@ function updateStats({ guessCount, isWin }) {
   stats.maxStreak = Math.max(stats.currentStreak, stats.maxStreak);
 
   storage.stats.write(stats);
-
-  renderStatistics();
 }
 
 function renderStatistics() {
+  const stats = storage.stats.read();
+
   gamesPlayed.textContent = stats.gamesPlayed;
   winPercentage.textContent = stats.winPercentage;
   currentStreak.textContent = stats.currentStreak;
@@ -543,7 +683,7 @@ function renderStatistics() {
   const container = document.createElement("div");
   container.classList.add("graph-container");
 
-  Object.entries(distributon).forEach(([number, value]) => {
+  Object.entries(distributon).forEach(([number, value], index) => {
     const guess = document.createElement("div");
     guess.classList.add("guess");
     guess.textContent = number;
@@ -554,7 +694,10 @@ function renderStatistics() {
     const count = document.createElement("div");
     count.classList.add("count");
     count.textContent = value.count;
-    count.style.width = value.width + "%";
+
+    setTimeout(() => {
+      count.style.width = value.width + "%";
+    }, index * 50);
 
     // highlight is true if the current game has ended, it highlights the guess number taken this game
     if (value.highlight) {
@@ -569,6 +712,7 @@ function renderStatistics() {
 }
 
 function computeGuessDistributon() {
+  const stats = storage.stats.read();
   const counts = Object.values(stats.guesses);
   if (counts.every((count) => count === 0)) {
     return null;
@@ -584,6 +728,9 @@ function computeGuessDistributon() {
     distribution[guess] = {
       count,
       width,
+      highlight:
+        gameState.gameStatus !== GAME_STATUS_FAIL &&
+        guess === gameState.rowIndex + 1,
     };
   }
 
@@ -597,15 +744,3 @@ function computeAverageGuesses(guesses, gamesWon) {
     }, 0) / gamesWon
   );
 }
-
-/**
- * Trick to restart an element's animation
- *
- * @param {HTMLElement} element
- * @return void
- *
- * @see https://www.charistheo.io/blog/2021/02/restart-a-css-animation-with-javascript/#restarting-a-css-animation
- */
-export const reflow = (element) => {
-  element.offsetHeight; // eslint-disable-line no-unused-expressions
-};
