@@ -227,12 +227,11 @@ async function share() {
       });
       return;
     } catch (error) {
-      // Hanlde AbortError, code: 20
-      if (error.name === "AbortError") {
-        return;
+      // On AbortError, allow to fall through to clipboard method below
+      if (error.name !== "AbortError") {
+        console.error("Error sharing:", error);
+        showAlert("Share failed");
       }
-      console.error("Error sharing:", error);
-      showAlert("Share failed");
     }
   }
 
