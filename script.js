@@ -173,6 +173,9 @@ function getWordleNumber(date) {
 }
 
 function newGame() {
+  gtag("event", "new", {
+    event_category: "Games",
+  });
   const now = Date.now();
   const number = getWordleNumber(now);
 
@@ -197,6 +200,9 @@ function newGame() {
 }
 
 function resumeGame(gameState) {
+  gtag("event", "resume", {
+    event_category: "Games",
+  });
   gameState.boardState?.forEach((guess, rowIndex) => {
     Array.from(guess).forEach((letter, letterIndex) => {
       const index = rowIndex * WORD_LENGTH + letterIndex;
@@ -260,23 +266,29 @@ theme.addEventListener("change", applyTheme);
 
 const handleSettingChange = (event) => {
   const setting = event.target.dataset.setting;
-  const checked = event.target?.checked;
+  const value = event.target?.checked;
 
   if (setting == null) {
     return;
   }
 
   if (setting === "disableAbsentLetters") {
-    setDisabledLetterMode(checked);
+    setDisabledLetterMode(value);
   }
 
   if (setting === "darkmode") {
-    setDarkMode(checked);
+    setDarkMode(value);
   }
 
   if (setting === "cbmode") {
-    setColorBlindMode(checked);
+    setColorBlindMode(value);
   }
+
+  gtag("event", "change", {
+    event_category: "Settings",
+    event_label: setting,
+    value,
+  });
 
   storage.settings.write(settings);
 };
@@ -295,6 +307,10 @@ const shareButton = document.querySelector("[data-share-button]");
 shareButton.addEventListener("click", share);
 
 async function share() {
+  gtag("event", "share", {
+    event_category: "Shares",
+  });
+
   const text = getSharableText();
 
   if (navigator.share) {
@@ -709,6 +725,11 @@ function win(tiles) {
   const message = WIN_MESSAGE[Math.floor(Math.random() * WIN_MESSAGE.length)];
   showAlert(message, 3000);
   danceTiles(tiles).then(() => setTimeout(openStatistics, 3000));
+  gtag("event", "win", {
+    event_category: "Games",
+    event_label: gameState.solution,
+    value: getGuessCount(),
+  });
 }
 
 function fail(tiles) {
@@ -722,6 +743,10 @@ function fail(tiles) {
   });
   showAlert(gameState.solution.toUpperCase(), null);
   setTimeout(openStatistics, 3000);
+  gtag("event", "lose", {
+    event_category: "Games",
+    event_label: gameState.solution,
+  });
 }
 
 function getGuessCount() {
