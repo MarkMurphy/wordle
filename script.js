@@ -41,15 +41,13 @@ const winPercentage = document.querySelector("[data-statistic-win-percentage]");
 const currentStreak = document.querySelector("[data-statistic-current-streak]");
 const bestStreak = document.querySelector("[data-statistic-best-streak]");
 
-const settings = {
-  disableAbsentLetters: false,
-};
-
 const GAME_STATUS_IN_PROGRESS = "IN_PROGRESS";
 const GAME_STATUS_WIN = "WIN";
 const GAME_STATUS_FAIL = "FAIL";
-
 const STORAGE_STATE_KEY = "wordle-state";
+const STORAGE_STATISTICS_KEY = "wordle-statistics";
+const STORAGE_SETTINGS_KEY = "wordle-settings";
+
 const STORAGE_STATE_DEFAULT = {
   boardState: null,
   evaluations: null,
@@ -59,7 +57,7 @@ const STORAGE_STATE_DEFAULT = {
   lastPlayedAt: null,
   lastCompletedAt: null,
 };
-const STORAGE_STATISTICS_KEY = "wordle-statistics";
+
 const STORAGE_STATISTICS_DEFAULT = {
   currentStreak: 0,
   maxStreak: 0,
@@ -76,6 +74,12 @@ const STORAGE_STATISTICS_DEFAULT = {
   gamesPlayed: 0,
   gamesWon: 0,
   averageGuesses: 0,
+};
+
+const STORAGE_SETTINGS_DEFAULT = {
+  disableAbsentLetters: false,
+  darkmode: null,
+  cbmode: null,
 };
 
 const storage = {
@@ -110,32 +114,56 @@ const storage = {
       localStorage.setItem(STORAGE_STATISTICS_KEY, JSON.stringify(value));
     },
   },
+  settings: {
+    read() {
+      try {
+        const text = localStorage.getItem(STORAGE_SETTINGS_KEY);
+        const value = text ? JSON.parse(text) : STORAGE_SETTINGS_DEFAULT;
+        // TODO: Assert value matches expected data structure
+        return value;
+      } catch (error) {
+        console.error(error);
+        return STORAGE_SETTINGS_DEFAULT;
+      }
+    },
+    write(value) {
+      localStorage.setItem(STORAGE_SETTINGS_KEY, JSON.stringify(value));
+    },
+  },
 };
 
 const root = document.documentElement;
-const theme = window.matchMedia?.("(prefers-color-scheme: light)") || {};
 const gameState = storage.state.read();
+const settings = storage.settings.read();
+const theme = window.matchMedia?.("(prefers-color-scheme: dark)");
 
 function init() {
-  changeTheme(theme);
+  applyTheme();
+  applyColorBlindMode();
 
   const state = storage.state.read();
   const lastCompletedWordle = getWordleNumber(state.lastCompletedAt);
 
   switch (state.gameStatus) {
     case GAME_STATUS_IN_PROGRESS:
-      return resumeGame(state);
+      resumeGame(state);
+      break;
     case GAME_STATUS_FAIL:
       if (lastCompletedWordle === getWordleNumber(Date.now())) {
-        return resumeGame(state);
+        resumeGame(state);
+        break;
       }
     case GAME_STATUS_WIN:
       if (lastCompletedWordle === getWordleNumber(Date.now())) {
-        return resumeGame(state);
+        resumeGame(state);
+        break;
       }
     default:
-      return newGame();
+      newGame();
+      break;
   }
+
+  applyDisabledLetterMode();
 }
 
 init();
@@ -191,22 +219,66 @@ function resumeGame(gameState) {
   startInteraction();
 }
 
-function changeTheme({ matches }) {
-  root.dataset.theme = matches ? "light" : "dark";
+function setDisabledLetterMode(value) {
+  settings.disableAbsentLetters = value === null ? null : Boolean(value);
+  applyDisabledLetterMode();
 }
 
-theme.addEventListener("change", changeTheme);
+function applyDisabledLetterMode() {
+  const keys = [...keyboard.querySelectorAll(`[data-state="${STATE_ABSENT}"]`)];
+  keys.forEach((key) => {
+    key.disabled = Boolean(settings.disableAbsentLetters);
+  });
+}
+
+function setColorBlindMode(value) {
+  settings.cbmode = value === null ? null : Boolean(value);
+  applyColorBlindMode();
+}
+
+function applyColorBlindMode() {
+  if (settings.cbmode) {
+    root.setAttribute("data-cbmode", "");
+  } else {
+    root.removeAttribute("data-cbmode");
+  }
+}
+
+function setDarkMode(value) {
+  settings.darkmode = Boolean(value);
+  root.dataset.theme = settings.darkmode ? "dark" : "light";
+}
+
+function applyTheme(media = theme) {
+  const darkmode = Boolean(
+    settings.darkmode === null ? media?.matches : settings.darkmode
+  );
+  root.dataset.theme = darkmode ? "dark" : "light";
+}
+
+theme.addEventListener("change", applyTheme);
 
 const handleSettingChange = (event) => {
   const setting = event.target.dataset.setting;
+  const checked = event.target?.checked;
 
   if (setting == null) {
     return;
   }
 
   if (setting === "disableAbsentLetters") {
-    settings.disableAbsentLetters = Boolean(event.target.checked);
+    setDisabledLetterMode(checked);
   }
+
+  if (setting === "darkmode") {
+    setDarkMode(checked);
+  }
+
+  if (setting === "cbmode") {
+    setColorBlindMode(checked);
+  }
+
+  storage.settings.write(settings);
 };
 
 document.addEventListener("change", handleSettingChange);
@@ -277,9 +349,7 @@ function getSharableText() {
 }
 
 function getLetterStateEmoji(state) {
-  // TODO
-  let cbmode = false;
-  let darkmode = root.dataset.theme === "dark";
+  const { cbmode = false, darkmode = root.dataset.theme === "dark" } = settings;
 
   switch (state) {
     case STATE_CORRECT:
@@ -524,6 +594,10 @@ function handleBeforeModalOpen(selector) {
   if (selector === "#statistics") {
     renderStatistics();
   }
+
+  if (selector === "#settings") {
+    renderSettings();
+  }
 }
 
 function openModal(selector) {
@@ -714,6 +788,15 @@ function renderStatistics() {
   });
 
   element.replaceChildren(container);
+}
+
+function renderSettings() {
+  for (const name of Object.keys(settings)) {
+    const element = document.querySelector(`[data-setting="${name}"]`);
+    if (element instanceof HTMLInputElement) {
+      element.checked = Boolean(settings[name]);
+    }
+  }
 }
 
 function computeGuessDistributon() {

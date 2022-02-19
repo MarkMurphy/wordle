@@ -76,176 +76,202 @@
   --game-max-width: 500px;
 }
 
-@media (prefers-color-scheme: light) {
-  :root, [data-theme="light"] {
-    --color-tone-1: #000000;
-    --color-tone-2: #787c7e;
-    --color-tone-3: #878a8c;
-    --color-tone-4: #d3d6da;
-    --color-tone-5: #edeff1;
-    --color-tone-6: #f6f7f8;
-    --color-tone-7: #ffffff;
+:root,
+[data-theme="light"] {
+  --color-tone-1: #000000;
+  --color-tone-2: #787c7e;
+  --color-tone-3: #878a8c;
+  --color-tone-4: #d3d6da;
+  --color-tone-5: #edeff1;
+  --color-tone-6: #f6f7f8;
+  --color-tone-7: #ffffff;
 
-    --color-tone-1-h: 0;
-    --color-tone-1-s: 0%;
-    --color-tone-1-l: 0%;
+  --color-tone-1-h: 0;
+  --color-tone-1-s: 0%;
+  --color-tone-1-l: 0%;
 
-    --color-tone-2-h: 200;
-    --color-tone-2-s: 2%;
-    --color-tone-2-l: 48%;
+  --color-tone-2-h: 200;
+  --color-tone-2-s: 2%;
+  --color-tone-2-l: 48%;
 
-    --color-tone-3-h: 204;
-    --color-tone-3-s: 2%;
-    --color-tone-3-l: 54%;
+  --color-tone-3-h: 204;
+  --color-tone-3-s: 2%;
+  --color-tone-3-l: 54%;
 
-    --color-tone-4-h: 214;
-    --color-tone-4-s: 9%;
-    --color-tone-4-l: 84%;
+  --color-tone-4-h: 214;
+  --color-tone-4-s: 9%;
+  --color-tone-4-l: 84%;
 
-    --color-tone-5-h: 210;
-    --color-tone-5-s: 12%;
-    --color-tone-5-l: 94%;
+  --color-tone-5-h: 210;
+  --color-tone-5-s: 12%;
+  --color-tone-5-l: 94%;
 
-    --color-tone-6-h: 210;
-    --color-tone-6-s: 12%;
-    --color-tone-6-l: 97%;
+  --color-tone-6-h: 210;
+  --color-tone-6-s: 12%;
+  --color-tone-6-l: 97%;
 
-    --color-tone-7-h: 0;
-    --color-tone-7-s: 0%;
-    --color-tone-7-l: 100%;
+  --color-tone-7-h: 0;
+  --color-tone-7-s: 0%;
+  --color-tone-7-l: 100%;
 
-    --color-background: var(--color-tone-7);
-    --color-nav-hover: #f4f4f4;
+  --color-background: var(--color-tone-7);
+  --color-nav-hover: #f4f4f4;
 
-    --opacity-rgb: 255, 255, 255;
-    --opacity-50: rgba(255, 255, 255, 0.5);
+  --opacity-rgb: 255, 255, 255;
+  --opacity-50: rgba(255, 255, 255, 0.5);
 
-    --color-present: var(--yellow);
-    --color-present-h: var(--yellow-h);
-    --color-present-s: var(--yellow-s);
-    --color-present-l: var(--yellow-l);
+  --color-present: var(--yellow);
+  --color-present-h: var(--yellow-h);
+  --color-present-s: var(--yellow-s);
+  --color-present-l: var(--yellow-l);
 
-    --color-correct: var(--green);
-    --color-correct-h: var(--green-h);
-    --color-correct-s: var(--green-s);
-    --color-correct-l: var(--green-l);
+  --color-correct: var(--green);
+  --color-correct-h: var(--green-h);
+  --color-correct-s: var(--green-s);
+  --color-correct-l: var(--green-l);
 
-    --color-absent: var(--color-tone-2);
-    --color-absent-h: var(--color-tone-2-h);
-    --color-absent-s: var(--color-tone-2-s);
-    --color-absent-l: var(--color-tone-2-l);
+  --color-absent: var(--color-tone-2);
+  --color-absent-h: var(--color-tone-2-h);
+  --color-absent-s: var(--color-tone-2-s);
+  --color-absent-l: var(--color-tone-2-l);
 
-    --tile-text-color: var(--color-tone-7);
-    --key-text-color: var(--color-tone-1);
-    --key-evaluated-text-color: var(--color-tone-7);
+  --tile-text-color: var(--color-tone-7);
+  --key-text-color: var(--color-tone-1);
+  --key-evaluated-text-color: var(--color-tone-7);
 
-    --key-bg: var(--color-tone-4);
-    --key-bg-present: var(--color-present);
-    --key-bg-correct: var(--color-correct);
-    --key-bg-absent: var(--color-absent);
+  --key-bg: var(--color-tone-4);
+  --key-bg-present: var(--color-present);
+  --key-bg-correct: var(--color-correct);
+  --key-bg-absent: var(--color-absent);
 
-    --key-bg-h: var(--color-tone-4-h);
-    --key-bg-s: var(--color-tone-4-s);
-    --key-bg-l: var(--color-tone-4-l);
+  --key-bg-h: var(--color-tone-4-h);
+  --key-bg-s: var(--color-tone-4-s);
+  --key-bg-l: var(--color-tone-4-l);
 
-    --key-bg-present-h: var(--color-present-h);
-    --key-bg-present-s: var(--color-present-s);
-    --key-bg-present-l: var(--color-present-l);
+  --key-bg-present-h: var(--color-present-h);
+  --key-bg-present-s: var(--color-present-s);
+  --key-bg-present-l: var(--color-present-l);
 
-    --key-bg-correct-h: var(--color-correct-h);
-    --key-bg-correct-s: var(--color-correct-s);
-    --key-bg-correct-l: var(--color-correct-l);
+  --key-bg-correct-h: var(--color-correct-h);
+  --key-bg-correct-s: var(--color-correct-s);
+  --key-bg-correct-l: var(--color-correct-l);
 
-    --key-bg-absent-h: var(--color-absent-h);
-    --key-bg-absent-s: var(--color-absent-s);
-    --key-bg-absent-l: var(--color-absent-l);
-  }
+  --key-bg-absent-h: var(--color-absent-h);
+  --key-bg-absent-s: var(--color-absent-s);
+  --key-bg-absent-l: var(--color-absent-l);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root, [data-theme="dark"] {
-    --color-tone-1: #ffffff;
-    --color-tone-2: #818384;
-    --color-tone-3: #565758;
-    --color-tone-4: #3a3a3c;
-    --color-tone-5: #272729;
-    --color-tone-6: #1a1a1b;
-    --color-tone-7: #121213;
+[data-theme="dark"] {
+  --color-tone-1: #ffffff;
+  --color-tone-2: #818384;
+  --color-tone-3: #565758;
+  --color-tone-4: #3a3a3c;
+  --color-tone-5: #272729;
+  --color-tone-6: #1a1a1b;
+  --color-tone-7: #121213;
 
-    --color-tone-1-h: 0;
-    --color-tone-1-s: 0%;
-    --color-tone-1-l: 100%;
+  --color-tone-1-h: 0;
+  --color-tone-1-s: 0%;
+  --color-tone-1-l: 100%;
 
-    --color-tone-2-h: 200;
-    --color-tone-2-s: 1%;
-    --color-tone-2-l: 51%;
+  --color-tone-2-h: 200;
+  --color-tone-2-s: 1%;
+  --color-tone-2-l: 51%;
 
-    --color-tone-3-h: 210;
-    --color-tone-3-s: 1%;
-    --color-tone-3-l: 34%;
+  --color-tone-3-h: 210;
+  --color-tone-3-s: 1%;
+  --color-tone-3-l: 34%;
 
-    --color-tone-4-h: 240;
-    --color-tone-4-s: 2%;
-    --color-tone-4-l: 23%;
+  --color-tone-4-h: 240;
+  --color-tone-4-s: 2%;
+  --color-tone-4-l: 23%;
 
-    --color-tone-5-h: 240;
-    --color-tone-5-s: 3%;
-    --color-tone-5-l: 16%;
+  --color-tone-5-h: 240;
+  --color-tone-5-s: 3%;
+  --color-tone-5-l: 16%;
 
-    --color-tone-6-h: 240;
-    --color-tone-6-s: 2%;
-    --color-tone-6-l: 10%;
+  --color-tone-6-h: 240;
+  --color-tone-6-s: 2%;
+  --color-tone-6-l: 10%;
 
-    --color-tone-7-h: 240;
-    --color-tone-7-s: 3%;
-    --color-tone-7-l: 7%;
+  --color-tone-7-h: 240;
+  --color-tone-7-s: 3%;
+  --color-tone-7-l: 7%;
 
-    --color-background: var(--color-tone-7);
-    --color-nav-hover: #2f2f31;
+  --color-background: var(--color-tone-7);
+  --color-nav-hover: #2f2f31;
 
-    --opacity-rgb: 0, 0, 0;
-    --opacity-50: rgba(0, 0, 0, 0.5);
+  --opacity-rgb: 0, 0, 0;
+  --opacity-50: rgba(0, 0, 0, 0.5);
 
-    --color-present: var(--dark-yellow);
-    --color-present-h: var(--dark-yellow-h);
-    --color-present-s: var(--dark-yellow-s);
-    --color-present-l: var(--dark-yellow-l);
+  --color-present: var(--dark-yellow);
+  --color-present-h: var(--dark-yellow-h);
+  --color-present-s: var(--dark-yellow-s);
+  --color-present-l: var(--dark-yellow-l);
 
-    --color-correct: var(--dark-green);
-    --color-correct-h: var(--dark-green-h);
-    --color-correct-s: var(--dark-green-s);
-    --color-correct-l: var(--dark-green-l);
+  --color-correct: var(--dark-green);
+  --color-correct-h: var(--dark-green-h);
+  --color-correct-s: var(--dark-green-s);
+  --color-correct-l: var(--dark-green-l);
 
-    --color-absent: var(--color-tone-4);
-    --color-absent-h: var(--color-tone-4-h);
-    --color-absent-s: var(--color-tone-4-s);
-    --color-absent-l: var(--color-tone-4-l);
+  --color-absent: var(--color-tone-4);
+  --color-absent-h: var(--color-tone-4-h);
+  --color-absent-s: var(--color-tone-4-s);
+  --color-absent-l: var(--color-tone-4-l);
 
-    --tile-text-color: var(--color-tone-1);
-    --key-text-color: var(--color-tone-1);
-    --key-evaluated-text-color: var(--color-tone-1);
+  --tile-text-color: var(--color-tone-1);
+  --key-text-color: var(--color-tone-1);
+  --key-evaluated-text-color: var(--color-tone-1);
 
-    --key-bg: var(--color-tone-2);
-    --key-bg-present: var(--color-present);
-    --key-bg-correct: var(--color-correct);
-    --key-bg-absent: var(--color-absent);
+  --key-bg: var(--color-tone-2);
+  --key-bg-present: var(--color-present);
+  --key-bg-correct: var(--color-correct);
+  --key-bg-absent: var(--color-absent);
 
-    --key-bg-h: var(--color-tone-2-h);
-    --key-bg-s: var(--color-tone-2-s);
-    --key-bg-l: var(--color-tone-2-l);
+  --key-bg-h: var(--color-tone-2-h);
+  --key-bg-s: var(--color-tone-2-s);
+  --key-bg-l: var(--color-tone-2-l);
 
-    --key-bg-present-h: var(--color-present-h);
-    --key-bg-present-s: var(--color-present-s);
-    --key-bg-present-l: var(--color-present-l);
+  --key-bg-present-h: var(--color-present-h);
+  --key-bg-present-s: var(--color-present-s);
+  --key-bg-present-l: var(--color-present-l);
 
-    --key-bg-correct-h: var(--color-correct-h);
-    --key-bg-correct-s: var(--color-correct-s);
-    --key-bg-correct-l: var(--color-correct-l);
+  --key-bg-correct-h: var(--color-correct-h);
+  --key-bg-correct-s: var(--color-correct-s);
+  --key-bg-correct-l: var(--color-correct-l);
 
-    --key-bg-absent-h: var(--color-absent-h);
-    --key-bg-absent-s: var(--color-absent-s);
-    --key-bg-absent-l: var(--color-absent-l);
-  }
+  --key-bg-absent-h: var(--color-absent-h);
+  --key-bg-absent-s: var(--color-absent-s);
+  --key-bg-absent-l: var(--color-absent-l);
+}
+
+[data-cbmode] {
+  --color-correct: var(--orange);
+  --color-correct-h: var(--orange-h);
+  --color-correct-s: var(--orange-s);
+  --color-correct-l: var(--orange-l);
+
+  --color-present: var(--blue);
+  --color-present-h: var(--blue-h);
+  --color-present-s: var(--blue-s);
+  --color-present-l: var(--blue-l);
+
+  --tile-text-color: var(--white);
+
+  --key-bg-present: var(--color-present);
+  --key-bg-present-h: var(--color-present-h);
+  --key-bg-present-s: var(--color-present-s);
+  --key-bg-present-l: var(--color-present-l);
+
+  --key-bg-correct: var(--color-correct);
+  --key-bg-correct-h: var(--color-correct-h);
+  --key-bg-correct-s: var(--color-correct-s);
+  --key-bg-correct-l: var(--color-correct-l);
+
+  --key-bg-absent: var(--color-absent);
+  --key-bg-absent-h: var(--color-absent-h);
+  --key-bg-absent-s: var(--color-absent-s);
+  --key-bg-absent-l: var(--color-absent-l);
 }
 
 :root {
