@@ -148,6 +148,12 @@ function newGame() {
   const now = Date.now();
   const number = getWordleNumber(now);
 
+  if (gameState === STORAGE_STATE_DEFAULT) {
+    setTimeout(() => {
+      openHelp();
+    }, 1000);
+  }
+
   Object.assign(gameState, {
     gameStatus: GAME_STATUS_IN_PROGRESS,
     lastPlayedAt: now,
